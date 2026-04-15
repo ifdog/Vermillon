@@ -6,7 +6,7 @@
 ---
 
 <!-- 请自行替换为首页截图 -->
-![Vermillon Screenshot](./docs/screenshot.png)
+![Vermillon Screenshot](./docs/mainpage.png)
 
 ---
 
@@ -133,7 +133,7 @@ README 顶部的截图引用路径为 `./docs/screenshot.png`。
 
 1. 启动项目并访问 `http://localhost:5000`。
 2. 截取首页效果图。
-3. 将图片保存为 `docs/screenshot.png` 并提交到仓库。
+3. 将图片保存为 `docs/mainpage.png` 并提交到仓库。
 
 ---
 
