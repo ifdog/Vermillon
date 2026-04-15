@@ -1,0 +1,49 @@
+import os
+from flask import Flask, send_from_directory
+from db import init_db, close_db
+from config import UPLOAD_FOLDER, ensure_upload_folder
+from api import memos, tags, search, calendar, upload, auth
+
+def create_app():
+    app = Flask(__name__, static_folder='static')
+    ensure_upload_folder()
+    init_db(app)
+    
+    app.teardown_appcontext(close_db)
+    
+    app.register_blueprint(memos.bp)
+    app.register_blueprint(tags.bp)
+    app.register_blueprint(search.bp)
+    app.register_blueprint(calendar.bp)
+    app.register_blueprint(upload.bp)
+    app.register_blueprint(auth.bp)
+    
+    @app.route('/uploads/<path:filename>')
+    def uploaded_file(filename):
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    
+    @app.route('/')
+    def index():
+        return app.send_static_file('index.html')
+    
+    @app.route('/write')
+    def write_page():
+        return app.send_static_file('write.html')
+    
+    @app.route('/edit/<int:id>')
+    def edit_page(id):
+        return app.send_static_file('write.html')
+    
+    @app.route('/admin')
+    def admin_page():
+        return app.send_static_file('admin.html')
+    
+    @app.route('/login')
+    def login_page():
+        return app.send_static_file('login.html')
+    
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=True)
