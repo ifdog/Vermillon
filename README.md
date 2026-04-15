@@ -6,7 +6,7 @@
 ---
 
 <!-- 请自行替换为首页截图 -->
-![Vermillon Screenshot](./docs/mainpage.png)
+![Vermillon Screenshot](./docs/screenshot.png)
 
 ---
 
