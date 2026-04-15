@@ -12,7 +12,7 @@ const paginationEl = document.querySelector('.paper-pagination');
 async function loadAdminMemos(page = 1) {
     const res = await apiFetch(`/api/memos?page=${page}&pageSize=${adminState.pageSize}`);
     if (!res.ok) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">加载失败，请检查 Admin Key</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请检查 Admin Key</td></tr>';
         return;
     }
     const data = await res.json();
@@ -26,7 +26,7 @@ async function loadAdminMemos(page = 1) {
 
 function renderTable(memos) {
     if (memos.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">暂无文章</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">暂无文章</td></tr>';
         return;
     }
     tableBody.innerHTML = memos.map(m => `
@@ -36,7 +36,6 @@ function renderTable(memos) {
                 <div class="fw-medium">${escapeHtml(m.title || '(无标题)')}</div>
                 <div class="small text-muted text-truncate" style="max-width: 400px">${escapeHtml(m.content.substring(0, 60))}${m.content.length > 60 ? '...' : ''}</div>
             </td>
-            <td>${m.mood || '-'}</td>
             <td class="text-muted small">${formatDate(m.created_at)}</td>
             <td>
                 <a href="/edit/${m.id}" class="btn btn-sm btn-paper-outline me-1">编辑</a>

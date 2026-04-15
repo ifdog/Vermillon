@@ -26,22 +26,7 @@
     <div class="container-fluid mt-3">
         <div class="row g-3 paper-row">
             <div class="col-md-6 d-flex flex-column">
-                <div class="mb-2">
-                    <span class="small text-muted me-2">心情 / 天气:</span>
-                    <div class="btn-group btn-group-sm" id="moodSelector" role="group">
-                        <button type="button" class="btn btn-paper-outline" data-mood="">无</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="😊">😊</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="😐">😐</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="😔">😔</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="🤔">🤔</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="🎉">🎉</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="☕️">☕️</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="🌧️">🌧️</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="☀️">☀️</button>
-                        <button type="button" class="btn btn-paper-outline" data-mood="🌙">🌙</button>
-                    </div>
-                </div>
-                <textarea id="editor" class="form-control flex-grow-1 font-monospace paper-textarea" style="min-height: 300px;" placeholder="在此输入 Markdown... 支持 #标签"></textarea>
+                <textarea id="editor" class="form-control flex-grow-1 font-monospace paper-textarea" style="min-height: 300px; margin-top: 0.5rem;" placeholder="在此输入 Markdown... 支持 #标签"></textarea>
                 <div class="upload-area mt-3 p-4 border border-2 border-dashed rounded text-center text-muted paper-upload" id="uploadArea">
                     <p class="mb-0">拖拽图片或文件到此处上传，或点击选择文件</p>
                     <input type="file" id="fileInput" multiple class="d-none">

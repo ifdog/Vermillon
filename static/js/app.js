@@ -144,17 +144,12 @@ function renderMemos(memos) {
             }
         }).join('');
 
-        const moodHtml = m.mood ? `<span class="memo-mood" title="心情">${m.mood}</span>` : '';
-
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        ${moodHtml}
-                        <small class="text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</small>
-                    </div>
+                    <small class="text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</small>
                     <div class="dropdown">
                         <button class="btn btn-link btn-sm text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
                         <ul class="dropdown-menu dropdown-menu-end">

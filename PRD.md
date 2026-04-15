@@ -2,7 +2,7 @@
 
 ## 1. 产品定位
 
-**一句话描述**：一个单用户的个人内容发布平台，兼具前台展示与后台管理，风格偏向文学与时间的沉淀感。
+**一句话描述**：一个单用户的个人内容发布平台，基于时间流进行文章管理与展示，兼具前台浏览与后台管理功能。
 
 **核心体验**：
 - 按时间倒序呈现短内容（Memo）。
@@ -60,7 +60,6 @@ CREATE TABLE memos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
     title TEXT,
-    mood TEXT,                    -- emoji 心情标记
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -94,7 +93,7 @@ CREATE TABLE attachments (
 
 ### 5.1 Timeline
 - 严格按时间倒序排列。
-- 卡片显示：心情 emoji、相对时间、Markdown 内容、标签 badge、附件缩略图。
+- 卡片显示：相对时间、Markdown 内容、标签 badge、附件缩略图。
 - 支持分页加载。
 - 正文中的纯标签段落会在渲染后自动隐藏，避免与底部 badge 重复。
 
@@ -110,7 +109,6 @@ CREATE TABLE attachments (
 
 ### 5.4 编辑页
 - 左右分栏：左侧 Markdown 原文，右侧实时预览。
-- 心情选择器：可选 emoji（😊 😐 😔 🤔 🎉 ☕️ 🌧️ ☀️ 🌙）。
 - 拖拽/点击上传附件，上传后自动插入 Markdown 图片语法。
 - 预览区支持 Prism 代码高亮和 Mermaid 图表渲染。
 
@@ -124,7 +122,7 @@ CREATE TABLE attachments (
 ## 6. UI/UX 规范
 
 - **整体风格**：淡黄色纸质背景（`#f3ecd0`）+ Vermillon 朱砂红强调色（`#D9381E`）。
-- **导航栏**：朱砂红背景，不固定（随页面滚动），品牌名居中。
+- **导航栏**：朱砂红背景，不固定（随页面滚动），品牌名居中，管理入口位于左侧。
 - **卡片**：半透明暖黄底色，轻微边框，Lumen 组件质感。
 - **响应式**：桌面端左右分栏，移动端左侧栏折叠。
 

@@ -4,10 +4,8 @@ const saveBtn = document.getElementById('saveBtn');
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const uploadList = document.getElementById('uploadList');
-const moodSelector = document.getElementById('moodSelector');
 
 let memoId = null;
-let selectedMood = '';
 const pathMatch = location.pathname.match(/^\/edit\/(\d+)$/);
 if (pathMatch) {
     memoId = parseInt(pathMatch[1], 10);
@@ -16,29 +14,6 @@ if (pathMatch) {
 }
 
 mermaid.initialize({ startOnLoad: false });
-
-// Mood selector
-if (moodSelector) {
-    moodSelector.querySelectorAll('button[data-mood]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            selectedMood = btn.dataset.mood;
-            updateMoodButtons();
-        });
-    });
-}
-
-function updateMoodButtons() {
-    if (!moodSelector) return;
-    moodSelector.querySelectorAll('button[data-mood]').forEach(btn => {
-        if (btn.dataset.mood === selectedMood) {
-            btn.classList.remove('btn-outline-secondary');
-            btn.classList.add('btn-primary');
-        } else {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-outline-secondary');
-        }
-    });
-}
 
 editor.addEventListener('input', updatePreview);
 updatePreview();
@@ -54,7 +29,7 @@ saveBtn.addEventListener('click', async () => {
     const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, mood: selectedMood })
+        body: JSON.stringify({ content })
     });
     if (res.ok) {
         location.href = '/';
@@ -69,8 +44,6 @@ async function loadMemo(id) {
     if (res.ok) {
         const data = await res.json();
         editor.value = data.content;
-        selectedMood = data.mood || '';
-        updateMoodButtons();
         updatePreview();
     } else {
         alert('加载失败');
@@ -99,9 +72,10 @@ async function renderMermaid(container) {
         const pre = node.parentElement;
         const graphDefinition = node.textContent;
         try {
-            const { svg } = await mermaid.render('mermaid-' + Math.random().toString(36).slice(2), graphDefinition);
+            const id = 'mermaid-' + Math.random().toString(36).slice(2);
+            const { svg } = await mermaid.render(id, graphDefinition);
             const div = document.createElement('div');
-            div.className = 'mermaid-svg';
+            div.className = 'mermaid-svg my-2';
             div.innerHTML = svg;
             pre.replaceWith(div);
         } catch (e) {
