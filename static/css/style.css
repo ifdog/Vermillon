@@ -5,8 +5,8 @@
     --bs-body-color: #3d3b36;
     --bs-secondary-color: #6b665c;
     --bs-border-color: #e5e1d8;
-    --bs-primary: #D9381E;
-    --bs-primary-rgb: 217, 56, 30;
+    --bs-primary: #E5A07A;
+    --bs-primary-rgb: 229, 160, 122;
     --bs-primary-bg-subtle: #ede6c8;
     --bs-primary-border-subtle: #e5e1d8;
     --bs-light: #fff9e6;
@@ -16,8 +16,8 @@
     --paper-text: #3d3b36;
     --paper-muted: #6b665c;
     --paper-border: #e5e1d8;
-    --paper-primary: #D9381E;
-    --paper-primary-hover: #B52D16;
+    --paper-primary: #E5A07A;
+    --paper-primary-hover: #C98A65;
     --paper-secondary: #a09580;
     --paper-shadow: 0 1px 2px rgba(62, 56, 45, 0.06);
 }
@@ -41,12 +41,39 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .brand-white {
     color: #fff !important;
     font-size: 1.5rem;
     letter-spacing: 0.5px;
+}
+
+.saturn-wrap {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, -35%);
+    z-index: 200;
+    pointer-events: none;
+}
+
+.saturn-float {
+    height: 64px;
+    width: auto;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.18));
+    pointer-events: auto;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .vermillon-navbar .navbar-toggler {
@@ -114,7 +141,7 @@ body {
 .form-control:focus {
     background-color: rgba(255, 249, 230, 0.55);
     border-color: var(--paper-primary);
-    box-shadow: 0 0 0 0.15rem rgba(217, 56, 30, 0.15);
+    box-shadow: 0 0 0 0.15rem rgba(229, 160, 122, 0.2);
     color: var(--paper-text);
 }
 
