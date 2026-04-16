@@ -152,18 +152,6 @@ $env:UPLOAD_FOLDER="/data/uploads"
 
 ---
 
-## 📸 截图占位说明
-
-README 顶部的截图引用路径为 `./docs/screenshot.png`。
-
-你可以按以下步骤替换为自己的首页截图：
-
-1. 启动项目并访问 `http://localhost:5000`。
-2. 截取首页效果图。
-3. 将图片保存为 `docs/screenshot.png` 并提交到仓库。
-
----
-
 ## 📜 License
 
 MIT License © 2026 Vermillon
