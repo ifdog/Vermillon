@@ -427,6 +427,25 @@ pre:hover .code-copy-btn {
     gap: 0.35rem;
 }
 
+/* Site Footer */
+.site-footer {
+    background-color: var(--paper-primary);
+    color: rgba(255, 255, 255, 0.95);
+    padding: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-footer .version {
+    opacity: 0.85;
+    font-size: 0.8rem;
+}
+
 /* Responsive */
 @media (max-width: 860px) {
     .write-layout { flex-direction: column; height: auto; }
