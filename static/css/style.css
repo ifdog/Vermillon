@@ -54,33 +54,17 @@ body {
     position: absolute;
     left: 50%;
     top: 100%;
-    transform: translateY(-35%);
-    width: 0;
-    overflow: visible;
+    transform: translate(-50%, -35%);
     z-index: 200;
     pointer-events: none;
-    animation: float-h 30s linear infinite;
 }
 
 .saturn-float {
     height: 64px;
     width: auto;
-    margin-left: -32px;
     animation: float-v 15s ease-in-out infinite;
     filter: drop-shadow(0 6px 10px rgba(0,0,0,0.18));
     pointer-events: auto;
-}
-
-@keyframes float-h {
-    0% {
-        margin-left: -42px;
-    }
-    50% {
-        margin-left: -22px;
-    }
-    100% {
-        margin-left: -42px;
-    }
 }
 
 @keyframes float-v {
