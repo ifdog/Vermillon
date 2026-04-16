@@ -29,8 +29,9 @@
 
 ### 环境要求
 - Python 3.10+
+- 或 Docker
 
-### 安装与运行
+### 方式一：本地运行
 
 ```bash
 # 克隆仓库
@@ -46,12 +47,28 @@ python app.py
 
 打开浏览器访问 `http://localhost:5000`。
 
+### 方式二：Docker Compose 部署（推荐）
+
+```bash
+cd Vermillon
+
+# 启动容器
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+```
+
+数据持久化说明：
+- SQLite 数据库 `vermillon.db` 会保存在 `./data/`
+- 上传的附件会保存在 `./data/uploads/`
+
 ### 默认登录信息
 - **管理后台**：`http://localhost:5000/admin`
 - **登录页**：`http://localhost:5000/login`
 - **默认 Admin Key**：`dev-key-change-in-production`
 
-> ⚠️ 生产环境部署前，请务必修改 `config.py` 或通过环境变量设置 `ADMIN_KEY`。
+> ⚠️ 生产环境部署前，请务必修改 `config.py`、`.env` 或 `docker-compose.yml` 中的 `ADMIN_KEY`。
 
 ---
 

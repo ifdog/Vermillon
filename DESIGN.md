@@ -269,6 +269,8 @@ CREATE TABLE attachments (
 
 ## 9. 启动方式
 
+### 本地开发
+
 ```bash
 cd Vermillon
 pip install -r requirements.txt
@@ -276,6 +278,16 @@ python app.py
 ```
 
 访问 `http://localhost:5000`
+
+### Docker Compose 部署
+
+```bash
+cd Vermillon
+docker-compose up -d
+```
+
+- SQLite 数据库和上传文件通过 `./data` 卷持久化
+- 可通过环境变量 `DATABASE_URL` 和 `UPLOAD_FOLDER` 自定义数据路径（已支持在 `config.py` 中读取）
 
 ---
 
