@@ -22,8 +22,11 @@ const searchInput = document.getElementById('searchInput');
 const dayMemosList = document.getElementById('dayMemosList');
 const dayMemosCount = document.getElementById('dayMemosCount');
 
-document.addEventListener('DOMContentLoaded', () => {
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
     mermaid.initialize({ startOnLoad: false });
+    await checkAuth();
     loadSiteTitle();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
@@ -47,6 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+async function checkAuth() {
+    try {
+        const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+        if (res.ok) {
+            const data = await res.json();
+            currentUser = data;
+        }
+    } catch (e) {}
+}
 
 function changeMonth(delta) {
     let m = state.calendarMonth + delta;
@@ -153,10 +166,11 @@ function renderMemos(memos) {
                     <div class="d-flex align-items-center gap-2">
                         <img src="/static/user.png" class="memo-avatar" alt="avatar">
                         <div class="memo-meta">
-                            <div class="memo-username">admin</div>
+                            <div class="memo-username">${currentUser ? escapeHtml(currentUser.username) : 'admin'}</div>
                             <div class="memo-time text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</div>
                         </div>
                     </div>
+                    ${currentUser ? `
                     <div class="dropdown">
                         <button class="btn btn-link btn-sm text-muted p-0 memo-menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
@@ -166,6 +180,7 @@ function renderMemos(memos) {
                             <li><button class="dropdown-item text-danger delete-memo-btn" data-id="${m.id}">删除</button></li>
                         </ul>
                     </div>
+                    ` : ''}
                 </div>
                 <div class="markdown-body">${marked.parse(m.content || '')}</div>
                 ${tagsHtml ? `<div class="mt-2 memo-tags">${tagsHtml}</div>` : ''}
@@ -197,16 +212,19 @@ function renderMemos(memos) {
             });
         });
 
-        card.querySelector('.delete-memo-btn').addEventListener('click', async (e) => {
-            if (!confirm('确定删除这条 Memo 吗？')) return;
-            const id = e.target.dataset.id;
-            const res = await apiFetch(`/api/memos/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                card.remove();
-            } else {
-                alert('删除失败，请检查 Admin Key');
-            }
-        });
+        const deleteBtn = card.querySelector('.delete-memo-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async (e) => {
+                if (!confirm('确定删除这条 Memo 吗？')) return;
+                const id = e.target.dataset.id;
+                const res = await apiFetch(`/api/memos/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    card.remove();
+                } else {
+                    alert('删除失败，请检查登录状态');
+                }
+            });
+        }
 
         timelineEl.appendChild(card);
     });
