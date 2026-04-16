@@ -102,12 +102,12 @@ async function loadMemos(reset) {
         return;
     }
 
-    let url = `/api/memos?page=${state.page}`;
+    let url = `/api/memos?page=${state.page}&pageSize=5`;
     if (state.date) url += `&date=${state.date}`;
     if (state.tag) url += `&tag=${encodeURIComponent(state.tag)}`;
 
     if (state.query) {
-        url = `/api/search?q=${encodeURIComponent(state.query)}&page=${state.page}`;
+        url = `/api/search?q=${encodeURIComponent(state.query)}&page=${state.page}&pageSize=5`;
     }
 
     const res = await apiFetch(url);

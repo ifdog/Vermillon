@@ -9,7 +9,8 @@ bp = Blueprint('search', __name__, url_prefix='/api/search')
 def search():
     q = request.args.get('q', '').strip()
     page = request.args.get('page', 1, type=int)
-    offset = (page - 1) * PAGE_SIZE
+    page_size = request.args.get('pageSize', PAGE_SIZE, type=int)
+    offset = (page - 1) * page_size
     
     if not q:
         return jsonify({'memos': [], 'page': page, 'total': 0, 'has_more': False})
@@ -18,7 +19,7 @@ def search():
     pattern = f'%{q}%'
     rows = db.execute(
         'SELECT * FROM memos WHERE content LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-        (pattern, PAGE_SIZE, offset)
+        (pattern, page_size, offset)
     ).fetchall()
     total = db.execute('SELECT COUNT(*) as c FROM memos WHERE content LIKE ?', (pattern,)).fetchone()['c']
     
