@@ -133,7 +133,7 @@ function renderMemos(memos) {
     }
 
     memos.forEach(m => {
-        const tagsHtml = m.tags.map(t => `<span class="badge bg-light text-dark me-1 memo-tag" data-tag="${t}" style="cursor:pointer">#${t}</span>`).join('');
+        const tagsHtml = m.tags.map(t => `<span class="badge memo-tag me-1" data-tag="${t}" style="cursor:pointer">#${t}</span>`).join('');
 
         const attachmentsHtml = m.attachments.map(att => {
             if (att.mime_type && att.mime_type.startsWith('image/')) {
@@ -146,13 +146,21 @@ function renderMemos(memos) {
         }).join('');
 
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card paper-card memo-card';
         card.innerHTML = `
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <small class="text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</small>
+                <div class="d-flex justify-content-between align-items-start mb-2 memo-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="/static/user.png" class="memo-avatar" alt="avatar">
+                        <div class="memo-meta">
+                            <div class="memo-username">admin</div>
+                            <div class="memo-time text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</div>
+                        </div>
+                    </div>
                     <div class="dropdown">
-                        <button class="btn btn-link btn-sm text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                        <button class="btn btn-link btn-sm text-muted p-0 memo-menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/edit/${m.id}">编辑</a></li>
                             <li><button class="dropdown-item text-danger delete-memo-btn" data-id="${m.id}">删除</button></li>
@@ -160,7 +168,7 @@ function renderMemos(memos) {
                     </div>
                 </div>
                 <div class="markdown-body">${marked.parse(m.content || '')}</div>
-                ${tagsHtml ? `<div class="mt-2">${tagsHtml}</div>` : ''}
+                ${tagsHtml ? `<div class="mt-2 memo-tags">${tagsHtml}</div>` : ''}
                 ${attachmentsHtml ? `<div class="memo-attachments mt-2">${attachmentsHtml}</div>` : ''}
             </div>
         `;
