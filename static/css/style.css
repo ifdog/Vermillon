@@ -54,25 +54,41 @@ body {
     position: absolute;
     left: 50%;
     top: 100%;
-    transform: translate(-50%, -35%);
+    transform: translateY(-35%);
+    width: 0;
+    overflow: visible;
     z-index: 200;
     pointer-events: none;
+    animation: float-h 30s linear infinite;
 }
 
 .saturn-float {
     height: 64px;
     width: auto;
-    animation: float 4s ease-in-out infinite;
+    margin-left: -32px;
+    animation: float-v 15s ease-in-out infinite;
     filter: drop-shadow(0 6px 10px rgba(0,0,0,0.18));
     pointer-events: auto;
 }
 
-@keyframes float {
+@keyframes float-h {
+    0% {
+        margin-left: -42px;
+    }
+    50% {
+        margin-left: -22px;
+    }
+    100% {
+        margin-left: -42px;
+    }
+}
+
+@keyframes float-v {
     0%, 100% {
         transform: translateY(0px);
     }
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-20px);
     }
 }
 
