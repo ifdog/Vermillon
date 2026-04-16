@@ -26,6 +26,9 @@ body {
     background-color: var(--bs-body-bg) !important;
     color: var(--bs-body-color) !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Navbar */
@@ -35,6 +38,7 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     padding-top: 14px;
     padding-bottom: 14px;
+    flex-shrink: 0;
 }
 
 .navbar-inner {
@@ -427,12 +431,18 @@ pre:hover .code-copy-btn {
     gap: 0.35rem;
 }
 
+body > .container-fluid {
+    flex: 1 0 auto;
+}
+
 /* Site Footer */
 .site-footer {
     background-color: var(--paper-primary);
     color: rgba(255, 255, 255, 0.95);
     padding: 1rem 0;
     font-size: 0.875rem;
+    flex-shrink: 0;
+    margin-top: auto;
 }
 
 .footer-inner {

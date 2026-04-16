@@ -12,7 +12,6 @@ venv/
 .vermillon.db
 data/
 docs/check_*.png
-.git
 .gitignore
 insert_data.py
 README.md

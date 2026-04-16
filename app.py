@@ -50,10 +50,16 @@ def create_app():
     
     @app.route('/api/version')
     def version():
-        try:
-            commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()
-        except Exception:
-            commit = 'unknown'
+        commit = 'unknown'
+        version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt')
+        if os.path.exists(version_file):
+            with open(version_file, 'r') as f:
+                commit = f.read().strip() or 'unknown'
+        if commit == 'unknown':
+            try:
+                commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()
+            except Exception:
+                commit = 'unknown'
         return jsonify({'version': commit})
     
     return app
