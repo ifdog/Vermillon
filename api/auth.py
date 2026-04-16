@@ -55,6 +55,36 @@ def change_password():
     
     return jsonify({'message': 'Password updated'})
 
+@bp.route('/change-username', methods=['POST'])
+@require_admin
+def change_username():
+    data = request.get_json()
+    new_username = data.get('new_username', '').strip()
+    password = data.get('password', '')
+    
+    if not new_username or not password:
+        return jsonify({'error': 'Username and password required'}), 400
+    
+    if len(new_username) < 2:
+        return jsonify({'error': 'Username too short'}), 400
+    
+    db = get_db()
+    user_id = session.get('user_id')
+    user = db.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    
+    if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+        return jsonify({'error': 'Password incorrect'}), 403
+    
+    existing = db.execute('SELECT * FROM users WHERE username = ?', (new_username,)).fetchone()
+    if existing:
+        return jsonify({'error': 'Username already exists'}), 409
+    
+    db.execute('UPDATE users SET username = ? WHERE id = ?', (new_username, user_id))
+    db.commit()
+    session['username'] = new_username
+    
+    return jsonify({'message': 'Username updated', 'username': new_username})
+
 @bp.route('/me', methods=['GET'])
 def me():
     if session.get('user_id'):

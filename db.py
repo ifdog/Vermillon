@@ -60,6 +60,25 @@ def init_db(app):
                 password_hash TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
+            
+            CREATE TABLE IF NOT EXISTS site_settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+            
+            CREATE TABLE IF NOT EXISTS stats (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                total_visits INTEGER DEFAULT 0,
+                index_visits INTEGER DEFAULT 0
+            );
+            
+            CREATE TABLE IF NOT EXISTS visits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                path TEXT NOT NULL,
+                ip TEXT,
+                user_agent TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
         
         # Create default admin user if not exists
@@ -68,5 +87,15 @@ def init_db(app):
             import bcrypt
             pw_hash = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', ('admin', pw_hash))
+        
+        # Default site title
+        title = cursor.execute('SELECT * FROM site_settings WHERE key = ?', ('site_title',)).fetchone()
+        if not title:
+            cursor.execute('INSERT INTO site_settings (key, value) VALUES (?, ?)', ('site_title', 'Vermillon'))
+        
+        # Default stats row
+        stats = cursor.execute('SELECT * FROM stats WHERE id = 1').fetchone()
+        if not stats:
+            cursor.execute('INSERT INTO stats (id, total_visits, index_visits) VALUES (1, 0, 0)')
         
         db.commit()

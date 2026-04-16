@@ -2,7 +2,7 @@ import os
 from flask import Flask, send_from_directory
 from db import init_db, close_db
 from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
-from api import memos, tags, search, calendar, upload, auth
+from api import memos, tags, search, calendar, upload, auth, settings, stats
 
 def create_app():
     app = Flask(__name__, static_folder='static')
@@ -18,6 +18,8 @@ def create_app():
     app.register_blueprint(calendar.bp)
     app.register_blueprint(upload.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(settings.bp)
+    app.register_blueprint(stats.bp)
     
     @app.route('/uploads/<path:filename>')
     def uploaded_file(filename):
@@ -25,6 +27,8 @@ def create_app():
     
     @app.route('/')
     def index():
+        from api.stats import record_visit
+        record_visit('/', request.remote_addr, request.user_agent.string[:200] if request.user_agent else None)
         return app.send_static_file('index.html')
     
     @app.route('/write')

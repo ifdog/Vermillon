@@ -24,6 +24,7 @@ const dayMemosCount = document.getElementById('dayMemosCount');
 
 document.addEventListener('DOMContentLoaded', () => {
     mermaid.initialize({ startOnLoad: false });
+    loadSiteTitle();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
     loadTags();
@@ -333,6 +334,18 @@ function renderDayMemos(dayData) {
             loadMemos(true);
         });
     });
+}
+
+async function loadSiteTitle() {
+    try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+            const data = await res.json();
+            const title = data.site_title || 'Vermillon';
+            document.getElementById('siteTitle').textContent = title;
+            document.title = title;
+        }
+    } catch (e) {}
 }
 
 function escapeHtml(text) {
