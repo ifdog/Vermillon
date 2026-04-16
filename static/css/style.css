@@ -1,23 +1,23 @@
 /* Paper Theme Overrides */
 
 :root {
-    --bs-body-bg: #f3ecd0;
+    --bs-body-bg: #f6f2e5;
     --bs-body-color: #3d3b36;
     --bs-secondary-color: #6b665c;
     --bs-border-color: #e5e1d8;
-    --bs-primary: #E5A07A;
-    --bs-primary-rgb: 229, 160, 122;
+    --bs-primary: #D86C5A;
+    --bs-primary-rgb: 216, 108, 90;
     --bs-primary-bg-subtle: #ede6c8;
     --bs-primary-border-subtle: #e5e1d8;
-    --bs-light: #fff9e6;
-    --bs-light-rgb: 255, 249, 230;
-    --paper-bg: #f3ecd0;
-    --paper-surface: #fff9e6;
+    --bs-light: #fffbf0;
+    --bs-light-rgb: 255, 251, 240;
+    --paper-bg: #f6f2e5;
+    --paper-surface: #fffbf0;
     --paper-text: #3d3b36;
     --paper-muted: #6b665c;
     --paper-border: #e5e1d8;
-    --paper-primary: #E5A07A;
-    --paper-primary-hover: #C98A65;
+    --paper-primary: #D86C5A;
+    --paper-primary-hover: #B85A4A;
     --paper-secondary: #a09580;
     --paper-shadow: 0 1px 2px rgba(62, 56, 45, 0.06);
 }
@@ -111,18 +111,18 @@ body {
 
 /* Cards */
 .paper-card {
-    background-color: rgba(255, 249, 230, 0.55);
+    background-color: rgba(255, 251, 240, 0.55);
     border: 1px solid var(--paper-border);
 }
 
 .paper-card .card-header {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
     border-bottom: 1px solid var(--paper-border);
     color: var(--paper-text);
 }
 
 .paper-card-header {
-    background-color: rgba(237, 230, 200, 0.7) !important;
+    background-color: rgba(240, 235, 215, 0.7) !important;
     border-bottom: 1px solid var(--paper-border) !important;
     color: var(--paper-text) !important;
 }
@@ -139,9 +139,9 @@ body {
 .paper-input:focus,
 .paper-textarea:focus,
 .form-control:focus {
-    background-color: rgba(255, 249, 230, 0.55);
+    background-color: rgba(255, 251, 240, 0.55);
     border-color: var(--paper-primary);
-    box-shadow: 0 0 0 0.15rem rgba(229, 160, 122, 0.2);
+    box-shadow: 0 0 0 0.15rem rgba(216, 108, 90, 0.2);
     color: var(--paper-text);
 }
 
@@ -153,11 +153,11 @@ body {
 }
 
 .paper-table thead {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
 }
 
 .paper-table tbody tr:hover {
-    background-color: rgba(237, 230, 200, 0.4);
+    background-color: rgba(240, 235, 215, 0.4);
 }
 
 /* Pagination */
@@ -174,14 +174,14 @@ body {
 }
 
 .paper-pagination .page-item.disabled .page-link {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
     color: #a8a194;
     border-color: var(--paper-border);
 }
 
 /* Alert */
 .paper-alert {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
     color: var(--paper-text);
     border-color: var(--paper-border);
 }
@@ -193,7 +193,7 @@ body {
 }
 
 .paper-tag {
-    background-color: rgba(237, 230, 200, 0.85);
+    background-color: rgba(240, 235, 215, 0.85);
     color: var(--paper-text);
     border: 1px solid var(--paper-border);
     font-weight: 500;
@@ -202,7 +202,7 @@ body {
 /* List group items inside paper cards */
 .paper-list-item,
 .list-group-item {
-    background-color: rgba(255, 249, 230, 0.4);
+    background-color: rgba(255, 251, 240, 0.4);
     border-color: var(--paper-border);
     color: var(--paper-muted);
 }
@@ -220,7 +220,7 @@ body {
 /* Calendar */
 .calendar-table thead,
 .paper-thead {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
 }
 
 .calendar-table td {
@@ -229,21 +229,21 @@ body {
     cursor: pointer;
     transition: background .15s;
     text-align: center;
-    background-color: rgba(255, 249, 230, 0.35);
+    background-color: rgba(255, 251, 240, 0.35);
     border-color: var(--paper-border);
 }
 
 .calendar-table td:hover {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
 }
 
 .calendar-table td.other-month {
     color: #a8a194;
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
 }
 
 .calendar-table td.has-memo {
-    background-color: rgba(237, 230, 200, 0.9);
+    background-color: rgba(240, 235, 215, 0.9);
     font-weight: 600;
 }
 
@@ -272,7 +272,7 @@ body {
     padding-left: 1rem;
     color: var(--paper-muted);
     margin-bottom: .75rem;
-    background: rgba(237, 230, 200, 0.5);
+    background: rgba(240, 235, 215, 0.5);
     padding: .75rem 1rem;
     border-radius: .25rem;
 }
@@ -304,7 +304,7 @@ body {
     border: 1px solid var(--paper-border);
     padding: .5rem .625rem;
 }
-.markdown-body th { background: rgba(237, 230, 200, 0.6); }
+.markdown-body th { background: rgba(240, 235, 215, 0.6); }
 .markdown-body hr { margin: 1rem 0; border-color: var(--paper-border); }
 
 /* Attachments */
@@ -359,7 +359,7 @@ pre:hover .code-copy-btn {
     color: var(--paper-text);
 }
 .dropdown-item:hover {
-    background-color: rgba(237, 230, 200, 0.7);
+    background-color: rgba(240, 235, 215, 0.7);
     color: var(--paper-text);
 }
 .dropdown-item.text-danger:hover {
