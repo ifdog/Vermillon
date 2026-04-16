@@ -1,11 +1,12 @@
 import os
 from flask import Flask, send_from_directory
 from db import init_db, close_db
-from config import UPLOAD_FOLDER, ensure_upload_folder
+from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
 from api import memos, tags, search, calendar, upload, auth
 
 def create_app():
     app = Flask(__name__, static_folder='static')
+    app.secret_key = SECRET_KEY
     ensure_upload_folder()
     init_db(app)
     

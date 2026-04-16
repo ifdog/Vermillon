@@ -1,9 +1,6 @@
 function apiFetch(url, options = {}) {
-    const key = localStorage.getItem('adminKey') || '';
+    options.credentials = 'same-origin';
     options.headers = options.headers || {};
-    if (key) {
-        options.headers['X-Admin-Key'] = key;
-    }
     return fetch(url, options);
 }
 
@@ -27,5 +24,3 @@ function formatDate(dateStr) {
     const d = new Date(dateStr);
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
-
-// Admin key is stored via login page

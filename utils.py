@@ -1,13 +1,11 @@
 import re
 from functools import wraps
-from flask import request, jsonify
-from config import ADMIN_KEY
+from flask import request, jsonify, session
 
 def require_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        key = request.headers.get('X-Admin-Key')
-        if key != ADMIN_KEY:
+        if not session.get('user_id'):
             return jsonify({'error': 'Unauthorized'}), 401
         return f(*args, **kwargs)
     return decorated

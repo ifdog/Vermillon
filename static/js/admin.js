@@ -9,10 +9,20 @@ const tableBody = document.getElementById('adminTableBody');
 const totalCountEl = document.getElementById('totalCount');
 const paginationEl = document.querySelector('.paper-pagination');
 
+// Check login status
+async function checkAuth() {
+    const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+    if (!res.ok) {
+        location.href = '/login?redirect=/admin';
+        return false;
+    }
+    return true;
+}
+
 async function loadAdminMemos(page = 1) {
     const res = await apiFetch(`/api/memos?page=${page}&pageSize=${adminState.pageSize}`);
     if (!res.ok) {
-        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请检查 Admin Key</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请重新登录</td></tr>';
         return;
     }
     const data = await res.json();
@@ -52,7 +62,7 @@ function renderTable(memos) {
             if (res.ok) {
                 loadAdminMemos(adminState.page);
             } else {
-                alert('删除失败，请检查 Admin Key');
+                alert('删除失败，请重新登录');
             }
         });
     });
@@ -66,7 +76,6 @@ function renderPagination(total, currentPage) {
     }
 
     let html = '';
-    // Previous
     html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
         <a class="page-link" href="#" data-page="${currentPage - 1}">上一页</a>
     </li>`;
@@ -77,7 +86,6 @@ function renderPagination(total, currentPage) {
         </li>`;
     }
 
-    // Next
     html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
         <a class="page-link" href="#" data-page="${currentPage + 1}">下一页</a>
     </li>`;
@@ -101,7 +109,38 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Wait for adminKey to be available from common.js
-setTimeout(() => {
-    loadAdminMemos(1);
-}, 100);
+// Change password
+document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const msgEl = document.getElementById('passwordMsg');
+
+    const res = await apiFetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: current, new_password: newPass })
+    });
+
+    const data = await res.json();
+    msgEl.classList.remove('d-none');
+    if (res.ok) {
+        msgEl.textContent = '密码修改成功';
+        msgEl.className = 'small mt-2 text-center text-success';
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+    } else {
+        msgEl.textContent = data.error || '修改失败';
+        msgEl.className = 'small mt-2 text-center text-danger';
+    }
+});
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await apiFetch('/api/auth/logout', { method: 'POST' });
+    location.href = '/login';
+});
+
+// Init
+checkAuth().then(ok => {
+    if (ok) loadAdminMemos(1);
+});

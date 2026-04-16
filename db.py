@@ -53,5 +53,20 @@ def init_db(app):
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (memo_id) REFERENCES memos(id) ON DELETE CASCADE
             );
+            
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
+        
+        # Create default admin user if not exists
+        admin = cursor.execute('SELECT * FROM users WHERE username = ?', ('admin',)).fetchone()
+        if not admin:
+            import bcrypt
+            pw_hash = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', ('admin', pw_hash))
+        
         db.commit()
