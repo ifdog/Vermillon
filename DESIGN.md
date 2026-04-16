@@ -10,7 +10,7 @@
 
 - **核心体验**：时间流（Timeline）+ 日历索引 + Markdown 原生支持
 - **风格定位**：淡黄色纸质风格 + Vermillon 暖橘强调色 + 悬浮土星品牌符号
-- **权限模型**：读者无需登录即可浏览；写/删/上传操作需通过 `/login` 页校验 Admin Key
+- **权限模型**：读者无需登录即可浏览；写/删/上传/后台管理需通过 `/login` 页进行用户名/密码 Session 认证
 
 ---
 
@@ -18,12 +18,13 @@
 
 | 层级 | 技术 | 说明 |
 |------|------|------|
-| 后端 | Python 3.10+ + Flask | REST API |
+| 后端 | Python 3.13 + Flask 3.0.3 | REST API，Session 认证 |
 | 数据库 | SQLite | 单文件 `vermillon.db` |
 | 前端 | 原生 JS + HTML5 + CSS3 | 无构建工具 |
 | CSS 主题 | Bootswatch Lumen + 自定义覆盖 | 纸质暖黄风格 |
 | 代码高亮 | Prism.js (CDN) | Tomorrow 主题，带复制按钮 |
 | 图表渲染 | Mermaid.js (CDN) | ` ```mermaid ` 自动渲染 SVG |
+| 密码加密 | Flask-Bcrypt | 默认管理员密码 bcrypt 哈希存储 |
 
 ---
 
@@ -33,12 +34,14 @@
 Vermillon/
 ├── api/                    # Flask Blueprints
 │   ├── __init__.py
-│   ├── auth.py             # POST /api/auth 校验 Admin Key
+│   ├── auth.py             # Session 登录、登出、修改密码/用户名
 │   ├── memos.py            # Memo CRUD + 标签解析
 │   ├── tags.py             # 标签列表
 │   ├── search.py           # 全文搜索
 │   ├── calendar.py         # 日历数据（含每日 Memo 数量及列表）
-│   └── upload.py           # 文件上传
+│   ├── upload.py           # 文件上传
+│   ├── stats.py            # 访问统计与日志
+│   └── settings.py         # 站点设置（如站点标题）
 ├── static/                 # 前端静态资源
 │   ├── css/style.css       # 核心主题样式（必须阅读）
 │   ├── js/
@@ -53,7 +56,7 @@ Vermillon/
 │   ├── admin.html          # 管理后台
 │   └── login.html          # 登录页
 ├── app.py                  # Flask 入口
-├── config.py               # ADMIN_KEY、UPLOAD_FOLDER、PAGE_SIZE
+├── config.py               # UPLOAD_FOLDER、SECRET_KEY、PAGE_SIZE 等
 ├── db.py                   # SQLite 初始化
 ├── utils.py                # extract_title、parse_tags、require_admin
 ├── requirements.txt
@@ -93,7 +96,7 @@ Vermillon/
   - 左侧：`Vermillon` 品牌标题
   - 正中：`.saturn-wrap` 包裹的 `saturn.png`，通过 `absolute + translate` 实现视觉居中，并悬浮在 banner 与正文交界处
   - 右侧：功能按钮（搜索框 + 管理/发布按钮）
-- **土星动画**：仅上下浮动（`translateY`），无旋转，高度 `64px`
+- **土星动画**：仅垂直上下浮动（`translateY(±20px)`），周期 15s，`ease-in-out`，无旋转，图标高度 64px
 
 ### 4.3 卡片（Cards）
 
@@ -145,6 +148,9 @@ Vermillon/
 **搜索**：
 - 顶部搜索框回车触发 `/api/search?q=xxx`
 
+**访问统计**：
+- 每次访问 `/` 时，后端自动记录 `visits` 日志（IP、User-Agent、时间），并累加 `total_visits`、`index_visits`、`today_visits` 计数器
+
 ### 5.2 编辑页 `/write` 与 `/edit/<id>`
 
 **布局**：`col-md-6` 左右分栏，左编辑右预览
@@ -157,16 +163,26 @@ Vermillon/
 
 ### 5.3 管理后台 `/admin`
 
-**权限**：页面加载时检查 `localStorage.getItem('adminKey')`，无则重定向 `/login?redirect=/admin`
+**权限**：所有管理 API 受 `@require_admin` 保护，校验 Flask Session 中的 `user_id`。未登录时前端会重定向到 `/login?redirect=/admin`
 
-**布局**：单卡片表格 + 底部分页（每页 15 条）
+**布局**：两栏布局
+- **左侧边栏**：导航菜单（文章管理、网站管理、用户管理、数值管理）
+- **右侧面板**：根据左侧选中项动态渲染对应功能卡片
 
-**操作**：编辑（跳转 `/edit/<id>`）、删除（确认后调用 `DELETE /api/memos/<id>`）
+**功能模块**：
+
+| 菜单 | 功能 |
+|------|------|
+| 文章管理 | Memo 列表表格、分页（每页 15 条）、编辑、删除 |
+| 网站管理 | 修改站点标题（`site_title`），保存后即时生效 |
+| 用户管理 | 修改用户名、修改密码（均需校验当前密码） |
+| 数值管理 | 展示总访问量、首页访问量、今日访问量、Memo/Tag 总数；分页浏览日志（每页 20 条） |
 
 ### 5.4 登录页 `/login`
 
-- 居中卡片，输入 Admin Key
-- 调用 `POST /api/auth`，通过后存入 `localStorage` 并跳转
+- 居中卡片，输入用户名与密码
+- 调用 `POST /api/auth/login`，通过后后端写入 Flask Session，前端跳转目标页面
+- `common.js` 的 `apiFetch` 携带 `credentials: 'same-origin'` 以保持 Session Cookie
 
 ---
 
@@ -204,6 +220,36 @@ CREATE TABLE attachments (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (memo_id) REFERENCES memos(id) ON DELETE CASCADE
 );
+
+-- 站点设置 key-value
+CREATE TABLE site_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+
+-- 统计数据（如 total_visits, index_visits, today_visits）
+CREATE TABLE stats (
+    key TEXT PRIMARY KEY,
+    value INTEGER DEFAULT 0,
+    date TEXT
+);
+
+-- 访问日志
+CREATE TABLE visits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    path TEXT,
+    ip TEXT,
+    user_agent TEXT,
+    visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 单用户表（初始化时自动插入默认管理员 admin/admin）
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 **标题提取规则**（`utils.py`）：
@@ -211,7 +257,7 @@ CREATE TABLE attachments (
 2. 否则取正文前 20 字符，超出补 `...`
 3. 空内容则显示 `(无标题)`
 
-**标签提取规则**：正则 `#[一-龥（一-龥）（）（一-龥）（一-龥）（一-龥）]`
+**标签提取规则**：正则 `#[\w\u4e00-\u9fa5_/]+`
 
 ---
 
@@ -220,25 +266,33 @@ CREATE TABLE attachments (
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET | `/api/memos?page=&date=&tag=&pageSize=` | Memo 列表 |
-| POST | `/api/memos` | 新建（需 `X-Admin-Key`） |
+| POST | `/api/memos` | 新建（需登录 Session） |
 | GET | `/api/memos/<id>` | 单条读取 |
-| PUT | `/api/memos/<id>` | 更新（需 `X-Admin-Key`） |
-| DELETE | `/api/memos/<id>` | 删除（需 `X-Admin-Key`） |
+| PUT | `/api/memos/<id>` | 更新（需登录 Session） |
+| DELETE | `/api/memos/<id>` | 删除（需登录 Session） |
 | GET | `/api/tags` | 所有标签及数量 |
 | GET | `/api/search?q=` | 全文搜索 |
 | GET | `/api/calendar/<year>/<month>` | 日历数据 |
-| POST | `/api/upload` | 上传附件（需 `X-Admin-Key`） |
-| POST | `/api/auth` | 校验 Admin Key |
+| POST | `/api/upload` | 上传附件（需登录 Session） |
+| POST | `/api/auth/login` | 用户名密码登录，写入 Session |
+| POST | `/api/auth/logout` | 登出，清除 Session |
+| POST | `/api/auth/change-password` | 修改密码（需登录） |
+| POST | `/api/auth/change-username` | 修改用户名（需登录） |
+| GET | `/api/stats` | 统计数据（需登录） |
+| GET | `/api/stats/visits?page=` | 访问日志分页（需登录） |
+| GET | `/api/settings` | 读取站点设置 |
+| POST | `/api/settings` | 更新站点设置（需登录） |
 | GET | `/uploads/<filename>` | 附件直链 |
 
 ---
 
 ## 8. 关键约定与注意事项
 
-### 8.1 Admin Key 机制
-- 存储在浏览器 `localStorage` 的 `adminKey` 键中
-- `common.js` 的 `apiFetch` 会自动在请求头附加 `X-Admin-Key`
-- 默认 key：`dev-key-change-in-production`（生产环境必须修改）
+### 8.1 Session 认证机制
+- 登录成功后后端写入 Flask Session Cookie
+- `common.js` 的 `apiFetch` 使用 `credentials: 'same-origin'` 自动携带 Cookie
+- 后台 API 通过 `@require_admin` 装饰器检查 `session['user_id']`
+- 默认管理员账号：`admin` / `admin`（首次启动自动创建，密码经 bcrypt 哈希存储）
 
 ### 8.2 纯 Tag 段落隐藏
 - 首页和编辑预览都会执行相同逻辑：
@@ -251,17 +305,18 @@ CREATE TABLE attachments (
 - 这只是视觉隐藏，不影响数据库中的 `content` 原文
 
 ### 8.3 文件上传
-- 文件存 `static/uploads/`
+- 文件存 `static/uploads/`（本地）或环境变量 `UPLOAD_FOLDER` 指定路径（Docker）
 - 数据库只存相对路径 `/uploads/<filename>`
 - `.gitignore` 已排除实际上传文件，但保留 `static/uploads/.gitkeep`
 
 ### 8.4 土星图标
 - 文件路径：`static/saturn.png`
 - CSS 类：`.saturn-wrap`（绝对定位居中）+ `.saturn-float`（上下浮动动画）
+- 动画仅垂直浮动（`translateY`），无旋转、无水平位移，高度 `64px`
 - 若需替换图标，直接覆盖同名文件即可
 
 ### 8.5 数据库文件
-- 名称：`vermillon.db`
+- 名称：默认 `vermillon.db`，可通过环境变量 `DATABASE_URL` 自定义
 - 已被 `.gitignore` 排除，不会进入版本控制
 - 生产部署时首次运行会自动建表
 
@@ -287,7 +342,8 @@ docker-compose up -d
 ```
 
 - SQLite 数据库和上传文件通过 `./data` 卷持久化
-- 可通过环境变量 `DATABASE_URL` 和 `UPLOAD_FOLDER` 自定义数据路径（已支持在 `config.py` 中读取）
+- 可通过环境变量 `DATABASE_URL` 和 `UPLOAD_FOLDER` 自定义数据路径（已在 `config.py` 中读取）
+- 建议同时通过环境变量设置强密钥 `SECRET_KEY`
 
 ---
 
@@ -300,5 +356,5 @@ docker-compose up -d
 
 ---
 
-**文档版本**：v1.0  
-**最后更新**：2026-04-15
+**文档版本**：v1.1  
+**最后更新**：2026-04-14
