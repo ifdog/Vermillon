@@ -31,6 +31,10 @@ document.querySelectorAll('[data-section]').forEach(btn => {
 function showSection(section) {
     document.querySelectorAll('.admin-section').forEach(el => el.classList.add('d-none'));
     document.getElementById('section-' + section).classList.remove('d-none');
+    const newArticleBtn = document.getElementById('newArticleBtn');
+    if (newArticleBtn) {
+        newArticleBtn.classList.toggle('d-none', section !== 'articles');
+    }
     if (section === 'articles') loadAdminMemos(1);
     if (section === 'stats') loadStats();
     if (section === 'site') loadSiteSettings();
