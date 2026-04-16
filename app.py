@@ -1,5 +1,6 @@
 import os
-from flask import Flask, send_from_directory, request
+import subprocess
+from flask import Flask, send_from_directory, request, jsonify
 from db import init_db, close_db
 from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
 from api import memos, tags, search, calendar, upload, auth, settings, stats
@@ -46,6 +47,14 @@ def create_app():
     @app.route('/login')
     def login_page():
         return app.send_static_file('login.html')
+    
+    @app.route('/api/version')
+    def version():
+        try:
+            commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()
+        except Exception:
+            commit = 'unknown'
+        return jsonify({'version': commit})
     
     return app
 
