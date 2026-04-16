@@ -18,7 +18,7 @@ RUN mkdir -p /data/uploads
 # Default environment variables (override in compose or runtime)
 ENV DATABASE_URL=/data/vermillon.db
 ENV UPLOAD_FOLDER=/data/uploads
-ENV ADMIN_KEY=dev-key-change-in-production
+ENV SECRET_KEY=dev-secret-key-change-in-production
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=5000
 

@@ -9,7 +9,8 @@ services:
     volumes:
       - ./data:/data
     environment:
-      - ADMIN_KEY=${ADMIN_KEY:-dev-key-change-in-production}
       - DATABASE_URL=/data/vermillon.db
       - UPLOAD_FOLDER=/data/uploads
+      # Flask session secret; change in production
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
     restart: unless-stopped
