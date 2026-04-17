@@ -185,9 +185,9 @@ body {
 
 /* Alert */
 .paper-alert {
-    background-color: rgba(240, 235, 215, 0.7);
+    background-color: rgba(255, 251, 240, 0.85);
     color: var(--paper-text);
-    border-color: var(--paper-border);
+    border-color: rgba(216, 108, 90, 0.25);
 }
 
 /* Badges */
