@@ -15,9 +15,6 @@ COPY . .
 # Create persistent data directory
 RUN mkdir -p /data/uploads
 
-# Record git commit hash for version endpoint
-RUN git rev-parse --short HEAD > /app/version.txt 2>/dev/null || echo "unknown" > /app/version.txt
-
 # Default environment variables (override in compose or runtime)
 ENV DATABASE_URL=/data/vermillon.db
 ENV UPLOAD_FOLDER=/data/uploads

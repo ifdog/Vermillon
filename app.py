@@ -1,5 +1,4 @@
 import os
-import subprocess
 from flask import Flask, send_from_directory, request, jsonify, render_template
 from db import init_db, close_db
 from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
@@ -59,17 +58,7 @@ def create_app():
     
     @app.route('/api/version')
     def version():
-        commit = 'unknown'
-        version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt')
-        if os.path.exists(version_file):
-            with open(version_file, 'r') as f:
-                commit = f.read().strip() or 'unknown'
-        if commit == 'unknown':
-            try:
-                commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()
-            except Exception:
-                commit = 'unknown'
-        return jsonify({'version': commit})
+        return jsonify({'version': '1.1'})
     
     return app
 
