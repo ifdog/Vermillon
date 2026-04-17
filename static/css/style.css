@@ -472,6 +472,21 @@ pre:hover .code-copy-btn {
     margin-left: 0.25rem;
 }
 
+.calendar-nav-btn {
+    background-color: transparent;
+    color: var(--paper-primary);
+    border: none;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.85rem;
+    line-height: 1;
+    border-radius: 0.35rem;
+}
+
+.calendar-nav-btn:hover {
+    background-color: rgba(216, 108, 90, 0.1);
+    color: var(--paper-primary-hover);
+}
+
 .memo-tags {
     display: flex;
     flex-wrap: wrap;
