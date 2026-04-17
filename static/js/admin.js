@@ -268,6 +268,7 @@ function escapeHtml(text) {
 // Init
 checkAuth().then(ok => {
     if (ok) {
+        showSection('site');
         loadSiteSettings();
     }
 });
