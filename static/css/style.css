@@ -197,8 +197,8 @@ body {
 }
 
 .paper-tag {
-    background-color: var(--paper-primary);
-    color: #fff8f0;
+    background-color: transparent;
+    color: var(--paper-primary);
     border: 1px solid var(--paper-primary);
     border-radius: 999px;
     font-weight: 500;
@@ -207,8 +207,8 @@ body {
 }
 
 .paper-tag:hover {
-    background-color: var(--paper-primary-hover);
-    border-color: var(--paper-primary-hover);
+    background-color: var(--paper-primary);
+    border-color: var(--paper-primary);
     color: #fff8f0;
 }
 
@@ -421,9 +421,9 @@ pre:hover .code-copy-btn {
 }
 
 .memo-tag {
-    background-color: var(--paper-primary);
-    color: #fff8f0;
-    border: 1px solid var(--paper-primary);
+    background-color: rgba(216, 108, 90, 0.08);
+    color: var(--paper-primary);
+    border: 1px solid rgba(216, 108, 90, 0.35);
     border-radius: 999px;
     font-weight: 500;
     font-size: 0.75rem;
@@ -431,9 +431,27 @@ pre:hover .code-copy-btn {
 }
 
 .memo-tag:hover {
-    background-color: var(--paper-primary-hover);
-    border-color: var(--paper-primary-hover);
-    color: #fff8f0;
+    background-color: rgba(216, 108, 90, 0.18);
+    border-color: rgba(216, 108, 90, 0.55);
+    color: var(--paper-primary);
+}
+
+.tag-more-btn {
+    color: var(--paper-muted);
+    font-size: 0.75rem;
+}
+
+.tag-more-btn:hover {
+    color: var(--paper-primary);
+}
+
+.calendar-count {
+    background-color: rgba(216, 108, 90, 0.15);
+    color: var(--paper-primary);
+    font-size: .65rem;
+    padding: 0.15em 0.45em;
+    border-radius: 999px;
+    margin-left: 0.25rem;
 }
 
 .memo-tags {

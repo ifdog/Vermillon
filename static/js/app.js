@@ -79,6 +79,7 @@ function resetFilters() {
     state.page = 1;
     searchInput.value = '';
     loadMemos(true);
+    document.getElementById('dayMemosCard').classList.add('d-none');
     dayMemosList.innerHTML = '<li class="list-group-item text-muted small">点击日历日期查看</li>';
     dayMemosCount.textContent = '0';
 }
@@ -289,7 +290,7 @@ async function loadCalendar(year, month) {
                 const dayData = data.days.find(d => d.date === dateStr);
                 const hasClass = dayData ? 'has-memo' : '';
                 const selectedClass = state.date === dateStr ? 'selected' : '';
-                const countBadge = dayData ? `<span class="badge bg-success rounded-pill ms-1" style="font-size:.65rem">${dayData.count}</span>` : '';
+                const countBadge = dayData ? `<span class="calendar-count">${dayData.count}</span>` : '';
                 html += `<td class="${hasClass} ${selectedClass}" data-date="${dateStr}">
                     <div class="d-flex align-items-center">
                         <span class="calendar-day-num">${day}</span>
@@ -323,22 +324,39 @@ async function loadTags() {
         tagsList.innerHTML = '<span class="text-muted small">暂无标签</span>';
         return;
     }
-    tagsList.innerHTML = data.tags.map(t => `
-        <span class="badge paper-tag tag-chip" data-tag="${t.name}" style="cursor:pointer">#${t.name} <span class="fw-normal">(${t.count})</span></span>
-    `).join('');
+    const initialLimit = 15;
+    const allTags = data.tags;
+    const showTags = allTags.slice(0, initialLimit);
 
-    tagsList.querySelectorAll('.tag-chip').forEach(el => {
-        el.addEventListener('click', () => {
-            state.tag = el.dataset.tag;
-            state.date = null;
-            state.query = null;
-            state.page = 1;
-            loadMemos(true);
+    function renderTags(tags) {
+        tagsList.innerHTML = tags.map(t => `
+            <span class="badge paper-tag tag-chip" data-tag="${t.name}" style="cursor:pointer">#${t.name} <span class="fw-normal">(${t.count})</span></span>
+        `).join('');
+
+        if (allTags.length > initialLimit && tags.length <= initialLimit) {
+            const moreBtn = document.createElement('button');
+            moreBtn.className = 'btn btn-link btn-sm text-decoration-none p-0 tag-more-btn';
+            moreBtn.textContent = '展开全部';
+            moreBtn.addEventListener('click', () => renderTags(allTags));
+            tagsList.appendChild(moreBtn);
+        }
+
+        tagsList.querySelectorAll('.tag-chip').forEach(el => {
+            el.addEventListener('click', () => {
+                state.tag = el.dataset.tag;
+                state.date = null;
+                state.query = null;
+                state.page = 1;
+                loadMemos(true);
+            });
         });
-    });
+    }
+
+    renderTags(showTags);
 }
 
 function renderDayMemos(dayData) {
+    document.getElementById('dayMemosCard').classList.remove('d-none');
     if (!dayData || !dayData.memos || dayData.memos.length === 0) {
         dayMemosList.innerHTML = '<li class="list-group-item text-muted small">当日无文档</li>';
         dayMemosCount.textContent = '0';
