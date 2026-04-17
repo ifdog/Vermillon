@@ -37,18 +37,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadMoreBtn.addEventListener('click', () => loadMemos(false));
     clearFilterBtn.addEventListener('click', resetFilters);
 
-    searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const q = searchInput.value.trim();
-            if (q) {
-                state.query = q;
-                state.date = null;
-                state.tag = null;
-                state.page = 1;
-                loadMemos(true);
-            }
+    function doSearch() {
+        const q = searchInput.value.trim();
+        if (q) {
+            state.query = q;
+            state.date = null;
+            state.tag = null;
+            state.page = 1;
+            loadMemos(true);
         }
+    }
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') doSearch();
     });
+    document.getElementById('searchBtn').addEventListener('click', doSearch);
 });
 
 async function checkAuth() {
