@@ -27,6 +27,7 @@ def init_db(app):
                 word_count INTEGER DEFAULT 0,
                 read_count INTEGER DEFAULT 0,
                 updated_count INTEGER DEFAULT 0,
+                published INTEGER DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
@@ -112,6 +113,10 @@ def init_db(app):
             pass
         try:
             cursor.execute('ALTER TABLE memos ADD COLUMN updated_count INTEGER DEFAULT 0')
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN published INTEGER DEFAULT 1')
         except sqlite3.OperationalError:
             pass
         

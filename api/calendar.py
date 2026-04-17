@@ -17,7 +17,7 @@ def get_calendar(year, month):
     rows = db.execute('''
         SELECT m.id, DATE(m.created_at) as day, m.title, m.word_count
         FROM memos m
-        WHERE m.created_at >= ? AND m.created_at < ?
+        WHERE m.created_at >= ? AND m.created_at < ? AND m.published = 1
         ORDER BY m.created_at DESC
     ''', (start_date, next_month)).fetchall()
     

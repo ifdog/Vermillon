@@ -136,7 +136,7 @@ async function loadAdminMemos(page = 1) {
 function renderTable(memos) {
     const tbody = document.getElementById('adminTableBody');
     if (memos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">暂无文章</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">暂无文章</td></tr>';
         return;
     }
     tbody.innerHTML = memos.map(m => `
@@ -146,6 +146,7 @@ function renderTable(memos) {
                 <div class="fw-medium">${escapeHtml(m.title || '(无标题)')}</div>
                 <div class="small text-muted text-truncate" style="max-width: 400px">${escapeHtml(m.content.substring(0, 60))}${m.content.length > 60 ? '...' : ''}</div>
             </td>
+            <td>${m.published ? '<span class="badge paper-badge">已发布</span>' : '<span class="badge bg-secondary">草稿</span>'}</td>
             <td class="text-muted small">${formatDate(m.created_at)}</td>
             <td>
                 <a href="/edit/${m.id}" class="btn btn-sm btn-paper-outline me-1">编辑</a>

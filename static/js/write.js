@@ -1,6 +1,7 @@
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const saveBtn = document.getElementById('saveBtn');
+const draftBtn = document.getElementById('draftBtn');
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const uploadList = document.getElementById('uploadList');
@@ -22,7 +23,7 @@ editor.addEventListener('input', () => {
 updatePreview();
 updateCharCount();
 
-saveBtn.addEventListener('click', async () => {
+async function saveMemo(published) {
     const content = editor.value.trim();
     if (!content) {
         alert('内容不能为空');
@@ -33,7 +34,7 @@ saveBtn.addEventListener('click', async () => {
     const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
+        body: JSON.stringify({ content, published })
     });
     if (res.ok) {
         location.href = '/';
@@ -41,7 +42,10 @@ saveBtn.addEventListener('click', async () => {
         const err = await res.json();
         alert('保存失败: ' + (err.error || '未知错误'));
     }
-});
+}
+
+saveBtn.addEventListener('click', () => saveMemo(true));
+draftBtn.addEventListener('click', () => saveMemo(false));
 
 async function loadMemo(id) {
     const res = await apiFetch(`/api/memos/${id}`);
@@ -50,6 +54,9 @@ async function loadMemo(id) {
         editor.value = data.content;
         updatePreview();
         updateCharCount();
+        if (!data.published) {
+            document.title = '编辑草稿 - Vermillon';
+        }
     } else {
         alert('加载失败');
     }

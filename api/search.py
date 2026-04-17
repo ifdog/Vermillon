@@ -18,10 +18,10 @@ def search():
     db = get_db()
     pattern = f'%{q}%'
     rows = db.execute(
-        'SELECT * FROM memos WHERE content LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+        'SELECT * FROM memos WHERE content LIKE ? AND published = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?',
         (pattern, page_size, offset)
     ).fetchall()
-    total = db.execute('SELECT COUNT(*) as c FROM memos WHERE content LIKE ?', (pattern,)).fetchone()['c']
+    total = db.execute('SELECT COUNT(*) as c FROM memos WHERE content LIKE ? AND published = 1', (pattern,)).fetchone()['c']
     
     memos = [_memo_to_dict(r, db) for r in rows]
     return jsonify({
