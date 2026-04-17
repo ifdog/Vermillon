@@ -177,7 +177,7 @@ function renderPagination(total, currentPage) {
     const totalPages = Math.ceil(total / adminState.pageSize);
     const el = document.getElementById('pagination');
     if (totalPages <= 1) {
-        el.innerHTML = '';
+        el.innerHTML = '<ul class="pagination pagination-sm paper-pagination"></ul>';
         return;
     }
     let html = '';
@@ -186,7 +186,7 @@ function renderPagination(total, currentPage) {
         html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
     }
     html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage + 1}">下一页</a></li>`;
-    el.innerHTML = html;
+    el.innerHTML = '<ul class="pagination pagination-sm paper-pagination">' + html + '</ul>';
 
     el.querySelectorAll('.page-link').forEach(link => {
         link.addEventListener('click', (e) => {
@@ -233,7 +233,7 @@ async function loadVisits(page = 1) {
     const totalPages = Math.ceil(data.total / adminState.visitsPageSize);
     const el = document.getElementById('visitsPagination');
     if (totalPages <= 1) {
-        el.innerHTML = '';
+        el.innerHTML = '<ul class="pagination pagination-sm paper-pagination"></ul>';
         return;
     }
     let html = '';
@@ -242,7 +242,7 @@ async function loadVisits(page = 1) {
         html += `<li class="page-item ${i === page ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
     }
     html += `<li class="page-item ${page === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${page + 1}">下一页</a></li>`;
-    el.innerHTML = html;
+    el.innerHTML = '<ul class="pagination pagination-sm paper-pagination">' + html + '</ul>';
 
     el.querySelectorAll('.page-link').forEach(link => {
         link.addEventListener('click', (e) => {
