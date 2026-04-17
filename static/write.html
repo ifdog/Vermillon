@@ -31,6 +31,9 @@
         <div class="row g-3 paper-row">
             <div class="col-md-6 d-flex flex-column">
                 <textarea id="editor" class="form-control flex-grow-1 font-monospace paper-textarea" style="min-height: 300px; margin-top: 0.5rem;" placeholder="在此输入 Markdown... 支持 #标签"></textarea>
+                <div class="text-end small text-muted mt-1">
+                    <span id="charCount">0</span> 字符
+                </div>
                 <div class="upload-area mt-3 p-4 border border-2 border-dashed rounded text-center text-muted paper-upload" id="uploadArea">
                     <p class="mb-0">拖拽图片或文件到此处上传，或点击选择文件</p>
                     <input type="file" id="fileInput" multiple class="d-none">

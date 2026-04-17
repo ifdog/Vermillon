@@ -26,6 +26,9 @@ def _memo_to_dict(row, db):
         'content': row['content'],
         'title': row['title'],
         'mood': row['mood'],
+        'word_count': row['word_count'] if 'word_count' in row.keys() else 0,
+        'read_count': row['read_count'] if 'read_count' in row.keys() else 0,
+        'updated_count': row['updated_count'] if 'updated_count' in row.keys() else 0,
         'created_at': row['created_at'],
         'updated_at': row['updated_at'],
         'tags': _get_memo_tags(db, row['id']),
@@ -93,7 +96,8 @@ def create_memo():
     db = get_db()
     title = extract_title(content)
     mood = data.get('mood', '').strip()
-    cursor = db.execute('INSERT INTO memos (content, title, mood) VALUES (?, ?, ?)', (content, title, mood or None))
+    word_count = len(content)
+    cursor = db.execute('INSERT INTO memos (content, title, mood, word_count) VALUES (?, ?, ?, ?)', (content, title, mood or None, word_count))
     memo_id = cursor.lastrowid
     _update_tags(db, memo_id, content)
     db.commit()
@@ -107,6 +111,9 @@ def get_memo(id):
     row = db.execute('SELECT * FROM memos WHERE id = ?', (id,)).fetchone()
     if not row:
         return jsonify({'error': 'Not found'}), 404
+    db.execute('UPDATE memos SET read_count = read_count + 1 WHERE id = ?', (id,))
+    db.commit()
+    row = db.execute('SELECT * FROM memos WHERE id = ?', (id,)).fetchone()
     return jsonify(_memo_to_dict(row, db))
 
 @bp.route('/<int:id>', methods=['PUT'])
@@ -124,7 +131,9 @@ def update_memo(id):
     
     title = extract_title(content)
     mood = data.get('mood', '').strip()
-    db.execute('UPDATE memos SET content = ?, title = ?, mood = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', (content, title, mood or None, id))
+    word_count = len(content)
+    updated_count = row['updated_count'] + 1 if 'updated_count' in row.keys() else 1
+    db.execute('UPDATE memos SET content = ?, title = ?, mood = ?, word_count = ?, updated_count = updated_count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?', (content, title, mood or None, word_count, id))
     _update_tags(db, id, content)
     db.commit()
     

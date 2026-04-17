@@ -24,6 +24,9 @@ def init_db(app):
                 content TEXT NOT NULL,
                 title TEXT,
                 mood TEXT,
+                word_count INTEGER DEFAULT 0,
+                read_count INTEGER DEFAULT 0,
+                updated_count INTEGER DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
@@ -97,5 +100,19 @@ def init_db(app):
         stats = cursor.execute('SELECT * FROM stats WHERE id = 1').fetchone()
         if not stats:
             cursor.execute('INSERT INTO stats (id, total_visits, index_visits) VALUES (1, 0, 0)')
+        
+        # Migrate existing databases: add metadata columns if not present
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN word_count INTEGER DEFAULT 0')
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN read_count INTEGER DEFAULT 0')
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN updated_count INTEGER DEFAULT 0')
+        except sqlite3.OperationalError:
+            pass
         
         db.commit()

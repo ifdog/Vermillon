@@ -15,7 +15,7 @@ def get_calendar(year, month):
         next_month = f'{year:04d}-{month+1:02d}-01'
     
     rows = db.execute('''
-        SELECT m.id, DATE(m.created_at) as day, m.title
+        SELECT m.id, DATE(m.created_at) as day, m.title, m.word_count
         FROM memos m
         WHERE m.created_at >= ? AND m.created_at < ?
         ORDER BY m.created_at DESC
@@ -43,6 +43,7 @@ def get_calendar(year, month):
         days[day]['memos'].append({
             'id': r['id'],
             'title': r['title'] or '(无标题)',
+            'word_count': r['word_count'] or 0,
             'tags': [t['name'] for t in tags]
         })
     

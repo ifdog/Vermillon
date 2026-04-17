@@ -366,6 +366,7 @@ function renderDayMemos(dayData) {
     dayMemosList.innerHTML = dayData.memos.map(m => `
         <li class="list-group-item py-2 day-memo-item" data-id="${m.id}" style="cursor:pointer">
             <div class="small fw-medium">${escapeHtml(m.title)}</div>
+            <div class="text-muted" style="font-size: 0.7rem;">${m.word_count || 0} 字</div>
         </li>
     `).join('');
 

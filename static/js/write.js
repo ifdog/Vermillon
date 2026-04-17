@@ -15,8 +15,12 @@ if (pathMatch) {
 
 mermaid.initialize({ startOnLoad: false });
 
-editor.addEventListener('input', updatePreview);
+editor.addEventListener('input', () => {
+    updatePreview();
+    updateCharCount();
+});
 updatePreview();
+updateCharCount();
 
 saveBtn.addEventListener('click', async () => {
     const content = editor.value.trim();
@@ -45,9 +49,15 @@ async function loadMemo(id) {
         const data = await res.json();
         editor.value = data.content;
         updatePreview();
+        updateCharCount();
     } else {
         alert('加载失败');
     }
+}
+
+function updateCharCount() {
+    const count = editor.value.length;
+    document.getElementById('charCount').textContent = count;
 }
 
 function updatePreview() {
