@@ -197,10 +197,19 @@ body {
 }
 
 .paper-tag {
-    background-color: rgba(240, 235, 215, 0.85);
-    color: var(--paper-text);
-    border: 1px solid var(--paper-border);
+    background-color: var(--paper-primary);
+    color: #fff8f0;
+    border: 1px solid var(--paper-primary);
+    border-radius: 999px;
     font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.25em 0.6em;
+}
+
+.paper-tag:hover {
+    background-color: var(--paper-primary-hover);
+    border-color: var(--paper-primary-hover);
+    color: #fff8f0;
 }
 
 /* List group items inside paper cards */
@@ -412,17 +421,19 @@ pre:hover .code-copy-btn {
 }
 
 .memo-tag {
-    background-color: rgba(255, 255, 255, 0.6);
-    color: var(--paper-primary);
-    border: 1.5px solid var(--paper-primary);
+    background-color: var(--paper-primary);
+    color: #fff8f0;
+    border: 1px solid var(--paper-primary);
     border-radius: 999px;
     font-weight: 500;
     font-size: 0.75rem;
-    padding: 0.2em 0.55em;
+    padding: 0.25em 0.6em;
 }
 
 .memo-tag:hover {
-    background-color: rgba(216, 108, 90, 0.1);
+    background-color: var(--paper-primary-hover);
+    border-color: var(--paper-primary-hover);
+    color: #fff8f0;
 }
 
 .memo-tags {
