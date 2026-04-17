@@ -35,20 +35,3 @@ function formatDate(dateStr) {
         .catch(() => {});
 })();
 
-async function loadSiteTitle() {
-    try {
-        const res = await fetch('/api/settings');
-        if (res.ok) {
-            const data = await res.json();
-            const title = data.site_title || 'Vermillon';
-            localStorage.setItem('site_title', title);
-            const siteTitleEl = document.getElementById('siteTitle');
-            if (siteTitleEl) siteTitleEl.textContent = title;
-            const navSiteTitleEl = document.getElementById('navSiteTitle');
-            if (navSiteTitleEl) navSiteTitleEl.textContent = title;
-            document.title = title;
-        }
-    } catch (e) {}
-}
-
-loadSiteTitle();

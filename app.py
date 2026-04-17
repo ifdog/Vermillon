@@ -1,12 +1,21 @@
 import os
 import subprocess
-from flask import Flask, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory, request, jsonify, render_template
 from db import init_db, close_db
 from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
 from api import memos, tags, search, calendar, upload, auth, settings, stats
 
+def get_site_title():
+    try:
+        from db import get_db
+        db = get_db()
+        row = db.execute('SELECT value FROM site_settings WHERE key = ?', ('site_title',)).fetchone()
+        return row['value'] if row else 'Vermillon'
+    except Exception:
+        return 'Vermillon'
+
 def create_app():
-    app = Flask(__name__, static_folder='static')
+    app = Flask(__name__, static_folder='static', template_folder='templates')
     app.secret_key = SECRET_KEY
     ensure_upload_folder()
     init_db(app)
@@ -30,23 +39,23 @@ def create_app():
     def index():
         from api.stats import record_visit
         record_visit('/', request.remote_addr, request.user_agent.string[:200] if request.user_agent else None)
-        return app.send_static_file('index.html')
+        return render_template('index.html', site_title=get_site_title())
     
     @app.route('/write')
     def write_page():
-        return app.send_static_file('write.html')
+        return render_template('write.html', site_title=get_site_title())
     
     @app.route('/edit/<int:id>')
     def edit_page(id):
-        return app.send_static_file('write.html')
+        return render_template('write.html', site_title=get_site_title())
     
     @app.route('/admin')
     def admin_page():
-        return app.send_static_file('admin.html')
+        return render_template('admin.html', site_title=get_site_title())
     
     @app.route('/login')
     def login_page():
-        return app.send_static_file('login.html')
+        return render_template('login.html', site_title=get_site_title())
     
     @app.route('/api/version')
     def version():
