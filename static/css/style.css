@@ -187,9 +187,9 @@ body {
 
 /* Alert */
 .paper-alert {
-    background-color: rgba(255, 251, 240, 0.85);
+    background-color: rgba(255, 251, 240, 0.55);
     color: var(--paper-text);
-    border-color: rgba(216, 108, 90, 0.25);
+    border: 1px solid var(--paper-border);
     border-radius: 0.5rem;
     box-shadow: 0 2px 6px rgba(62, 56, 45, 0.06), 0 1px 3px rgba(62, 56, 45, 0.05);
 }
