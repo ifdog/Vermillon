@@ -192,8 +192,11 @@ body {
 
 /* Badges */
 .paper-badge {
-    background-color: var(--paper-primary);
-    color: #fff8f0;
+    background-color: rgba(216, 108, 90, 0.12);
+    color: var(--paper-primary);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    padding: 0.25em 0.6em;
 }
 
 .paper-tag {
