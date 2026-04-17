@@ -185,6 +185,10 @@ function renderMemos(memos) {
         return;
     }
 
+    if (state.page === 1) {
+        timelineEl.innerHTML = '';
+    }
+
     let enterIndex = 0;
     memos.forEach(m => {
         const tagsHtml = m.tags.map(t => `<span class="badge memo-tag me-1" data-tag="${t}" style="cursor:pointer">#${t}</span>`).join('');
