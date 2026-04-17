@@ -58,7 +58,7 @@ def create_app():
     
     @app.route('/api/version')
     def version():
-        return jsonify({'version': '1.1'})
+        return jsonify({'version': '1.2'})
     
     return app
 
