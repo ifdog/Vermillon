@@ -1,6 +1,6 @@
 initInkRipple();
 initPaperTrail();
-initHighlighterSweep();
+
 
 let adminState = {
     page: 1,

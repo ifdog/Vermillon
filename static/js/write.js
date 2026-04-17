@@ -1,6 +1,6 @@
 initInkRipple();
 initPaperTrail();
-initHighlighterSweep();
+
 
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');

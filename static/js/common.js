@@ -13,28 +13,6 @@ function createInkRipple(x, y) {
     setTimeout(() => ripple.remove(), 700);
 }
 
-function initHighlighterSweep() {
-    document.addEventListener('mouseup', () => {
-        const selection = window.getSelection();
-        if (!selection || selection.toString().trim().length === 0) return;
-
-        const range = selection.getRangeAt(0);
-        const rects = range.getClientRects();
-        for (let i = 0; i < rects.length; i++) {
-            const rect = rects[i];
-            if (rect.width < 2 || rect.height < 2) continue;
-            const el = document.createElement('div');
-            el.className = 'highlighter-sweep';
-            el.style.left = rect.left + 'px';
-            el.style.top = rect.top + 'px';
-            el.style.width = rect.width + 'px';
-            el.style.height = rect.height + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 500);
-        }
-    });
-}
-
 function initInkRipple() {
     document.addEventListener('click', (e) => {
         const tag = e.target.tagName;
@@ -62,17 +40,17 @@ function initPaperTrail() {
         lastY = e.clientY;
         lastTime = now;
 
-        if (speed > 0.8 && Math.random() < 0.25) {
+        if (speed > 0.5 && Math.random() < 0.45) {
             const el = document.createElement('div');
             el.className = 'paper-trail';
             el.style.left = e.clientX + 'px';
             el.style.top = e.clientY + 'px';
-            const tx = (Math.random() - 0.5) * 40;
-            const rot = (Math.random() - 0.5) * 360;
+            const tx = (Math.random() - 0.5) * 60;
+            const rot = (Math.random() - 0.5) * 540;
             el.style.setProperty('--tx', tx + 'px');
             el.style.setProperty('--rot', rot + 'deg');
             document.body.appendChild(el);
-            setTimeout(() => el.remove(), 800);
+            setTimeout(() => el.remove(), 1200);
         }
     });
 }

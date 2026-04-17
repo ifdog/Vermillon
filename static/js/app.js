@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     mermaid.initialize({ startOnLoad: false });
     initInkRipple();
     initPaperTrail();
-    initHighlighterSweep();
+
     await checkAuth();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
@@ -72,15 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     backToTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    // Saturn parallax
-    const saturnWrap = document.querySelector('.saturn-wrap');
-    if (saturnWrap) {
-        window.addEventListener('scroll', () => {
-            const offset = window.scrollY * 0.12;
-            saturnWrap.style.top = `calc(100% - ${offset}px)`;
-        });
-    }
 });
 
 async function checkAuth() {

@@ -680,39 +680,23 @@ body > .container-fluid {
     background-color: var(--paper-primary-hover);
 }
 
-/* Highlighter Sweep */
-.highlighter-sweep {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    background: linear-gradient(90deg, transparent 0%, rgba(240, 230, 168, 0.5) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: highlighterSweep 0.5s ease-out forwards;
-    border-radius: 2px;
-}
-
-@keyframes highlighterSweep {
-    0% { background-position: 200% 0; opacity: 0.8; }
-    100% { background-position: -200% 0; opacity: 0; }
-}
-
 /* Ink Ripple Effect */
 .ink-ripple {
     position: fixed;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(216, 108, 90, 0.2) 0%, rgba(216, 108, 90, 0) 70%);
+    background: radial-gradient(circle, rgba(216, 108, 90, 0.45) 0%, rgba(216, 108, 90, 0.15) 40%, rgba(216, 108, 90, 0) 70%);
     pointer-events: none;
     transform: translate(-50%, -50%) scale(0);
-    animation: inkExpand 0.7s ease-out forwards;
+    animation: inkExpand 1s ease-out forwards;
     z-index: 9998;
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
 }
 
 @keyframes inkExpand {
     0% {
         transform: translate(-50%, -50%) scale(0);
-        opacity: 0.5;
+        opacity: 0.8;
     }
     100% {
         transform: translate(-50%, -50%) scale(1);
@@ -725,20 +709,20 @@ body > .container-fluid {
     position: fixed;
     pointer-events: none;
     z-index: 9997;
-    width: 4px;
-    height: 6px;
-    background-color: rgba(216, 108, 90, 0.2);
-    border-radius: 1px;
-    animation: trailFall 0.8s ease-out forwards;
+    width: 8px;
+    height: 12px;
+    background-color: rgba(216, 108, 90, 0.45);
+    border-radius: 2px;
+    animation: trailFall 1.2s ease-out forwards;
 }
 
 @keyframes trailFall {
     0% {
         transform: translate(0, 0) rotate(0deg);
-        opacity: 0.6;
+        opacity: 0.9;
     }
     100% {
-        transform: translate(var(--tx, 20px), 40px) rotate(var(--rot, 180deg));
+        transform: translate(var(--tx, 30px), 60px) rotate(var(--rot, 270deg));
         opacity: 0;
     }
 }
