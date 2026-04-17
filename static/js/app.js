@@ -24,8 +24,20 @@ const dayMemosCount = document.getElementById('dayMemosCount');
 
 let currentUser = null;
 
+const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            cardObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
 document.addEventListener('DOMContentLoaded', async () => {
     mermaid.initialize({ startOnLoad: false });
+    initInkRipple();
+    initPaperTrail();
+    initHighlighterSweep();
     await checkAuth();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
@@ -60,6 +72,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     backToTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    // Saturn parallax
+    const saturnWrap = document.querySelector('.saturn-wrap');
+    if (saturnWrap) {
+        window.addEventListener('scroll', () => {
+            const offset = window.scrollY * 0.12;
+            saturnWrap.style.top = `calc(100% - ${offset}px)`;
+        });
+    }
 });
 
 async function checkAuth() {
@@ -79,7 +100,19 @@ function changeMonth(delta) {
     if (m > 12) { m = 1; y++; }
     state.calendarMonth = m;
     state.calendarYear = y;
-    loadCalendar(y, m);
+
+    const calendarTable = document.querySelector('.calendar-table');
+    if (calendarTable) {
+        calendarTable.classList.add('calendar-exit');
+        setTimeout(() => {
+            loadCalendar(y, m);
+            calendarTable.classList.remove('calendar-exit');
+            calendarTable.classList.add('calendar-enter');
+            setTimeout(() => calendarTable.classList.remove('calendar-enter'), 300);
+        }, 250);
+    } else {
+        loadCalendar(y, m);
+    }
 }
 
 function resetFilters() {
@@ -283,6 +316,7 @@ function renderMemos(memos) {
         }
 
         timelineEl.appendChild(card);
+        cardObserver.observe(card);
     });
 }
 

@@ -4,6 +4,108 @@ function apiFetch(url, options = {}) {
     return fetch(url, options);
 }
 
+function createInkRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.className = 'ink-ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
+}
+
+function initHighlighterSweep() {
+    document.addEventListener('mouseup', () => {
+        const selection = window.getSelection();
+        if (!selection || selection.toString().trim().length === 0) return;
+
+        const range = selection.getRangeAt(0);
+        const rects = range.getClientRects();
+        for (let i = 0; i < rects.length; i++) {
+            const rect = rects[i];
+            if (rect.width < 2 || rect.height < 2) continue;
+            const el = document.createElement('div');
+            el.className = 'highlighter-sweep';
+            el.style.left = rect.left + 'px';
+            el.style.top = rect.top + 'px';
+            el.style.width = rect.width + 'px';
+            el.style.height = rect.height + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 500);
+        }
+    });
+}
+
+function initInkRipple() {
+    document.addEventListener('click', (e) => {
+        const tag = e.target.tagName;
+        const clickable = e.target.closest('a, button, input, textarea, select, label, .dropdown-menu, .btn');
+        if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || clickable) {
+            return;
+        }
+        createInkRipple(e.clientX, e.clientY);
+    });
+}
+
+function initPaperTrail() {
+    let lastX = 0, lastY = 0, lastTime = 0;
+    document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        const dt = now - lastTime;
+        if (dt < 80) return;
+
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const speed = dist / (dt || 1);
+
+        lastX = e.clientX;
+        lastY = e.clientY;
+        lastTime = now;
+
+        if (speed > 0.8 && Math.random() < 0.25) {
+            const el = document.createElement('div');
+            el.className = 'paper-trail';
+            el.style.left = e.clientX + 'px';
+            el.style.top = e.clientY + 'px';
+            const tx = (Math.random() - 0.5) * 40;
+            const rot = (Math.random() - 0.5) * 360;
+            el.style.setProperty('--tx', tx + 'px');
+            el.style.setProperty('--rot', rot + 'deg');
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+    });
+}
+
+function launchPaperConfetti() {
+    const colors = ['#D86C5A', '#e5a07a', '#f3ecd0', '#e5d4b8', '#c9a87c', '#fffbf0'];
+    const count = 20;
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'paper-confetti';
+        const size = 6 + Math.random() * 8;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const duration = 1.2 + Math.random() * 0.8;
+        const sway = 30 + Math.random() * 60;
+        const rotate = (Math.random() - 0.5) * 720;
+
+        el.style.width = size + 'px';
+        el.style.height = (size * 0.6) + 'px';
+        el.style.backgroundColor = color;
+        el.style.left = left + 'vw';
+        el.style.top = '-20px';
+        el.style.borderRadius = '1px';
+        el.style.opacity = '0.9';
+        el.style.setProperty('--fall-duration', duration + 's');
+        el.style.setProperty('--sway', sway + 'px');
+        el.style.setProperty('--rotate', rotate + 'deg');
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), duration * 1000 + 100);
+    }
+}
+
 function showToast(message, type = 'success', duration = 3000) {
     let container = document.querySelector('.toast-container');
     if (!container) {

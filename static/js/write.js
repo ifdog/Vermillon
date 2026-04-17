@@ -1,3 +1,7 @@
+initInkRipple();
+initPaperTrail();
+initHighlighterSweep();
+
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const saveBtn = document.getElementById('saveBtn');
@@ -37,7 +41,15 @@ async function saveMemo(published) {
         body: JSON.stringify({ content, published })
     });
     if (res.ok) {
-        location.href = '/';
+        if (published) {
+            launchPaperConfetti();
+            showToast('发布成功！');
+        } else {
+            showToast('草稿已保存');
+        }
+        setTimeout(() => {
+            location.href = '/';
+        }, 1200);
     } else {
         const err = await res.json();
         showToast('保存失败: ' + (err.error || '未知错误'), 'error');
