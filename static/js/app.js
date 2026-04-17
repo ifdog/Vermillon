@@ -51,6 +51,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === 'Enter') doSearch();
     });
     document.getElementById('searchBtn').addEventListener('click', doSearch);
+
+    // Back to top
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('show', window.scrollY > 600);
+    });
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 });
 
 async function checkAuth() {
@@ -86,10 +95,32 @@ function resetFilters() {
     dayMemosCount.textContent = '0';
 }
 
+function showSkeleton(count = 3) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="skeleton-card">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="skeleton-avatar"></div>
+                    <div style="flex:1">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line" style="width:30%"></div>
+                    </div>
+                </div>
+                <div class="skeleton-line medium"></div>
+                <div class="skeleton-line long"></div>
+                <div class="skeleton-line" style="width:60%"></div>
+            </div>
+        `;
+    }
+    timelineEl.innerHTML = html;
+}
+
 async function loadMemos(reset) {
     if (reset) {
-        timelineEl.innerHTML = '';
         state.page = 1;
+        showSkeleton(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     if (state.selectedMemoId) {
@@ -144,10 +175,17 @@ function updateFilterBar() {
 
 function renderMemos(memos) {
     if (memos.length === 0 && state.page === 1) {
-        timelineEl.innerHTML = '<div class="text-center text-muted py-5">暂无内容</div>';
+        timelineEl.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-title">还没有文章</div>
+                <div class="empty-state-desc">点击右上角「管理」→「新建文章」开始写作</div>
+            </div>
+        `;
         return;
     }
 
+    let enterIndex = 0;
     memos.forEach(m => {
         const tagsHtml = m.tags.map(t => `<span class="badge memo-tag me-1" data-tag="${t}" style="cursor:pointer">#${t}</span>`).join('');
 
@@ -162,7 +200,9 @@ function renderMemos(memos) {
         }).join('');
 
         const card = document.createElement('div');
-        card.className = 'card paper-card memo-card';
+        card.className = 'card paper-card memo-card card-enter';
+        card.style.animationDelay = `${enterIndex * 0.06}s`;
+        enterIndex++;
         card.innerHTML = `
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2 memo-header">
@@ -205,6 +245,15 @@ function renderMemos(memos) {
         }
         addCopyButtons(mdBody);
 
+        // Image lazy fade-in
+        mdBody.querySelectorAll('img').forEach(img => {
+            if (img.complete) {
+                img.classList.add('img-loaded');
+            } else {
+                img.addEventListener('load', () => img.classList.add('img-loaded'));
+            }
+        });
+
         card.querySelectorAll('.memo-tag').forEach(el => {
             el.addEventListener('click', () => {
                 state.tag = el.dataset.tag;
@@ -224,7 +273,7 @@ function renderMemos(memos) {
                 if (res.ok) {
                     card.remove();
                 } else {
-                    alert('删除失败，请检查登录状态');
+                    showToast('删除失败，请检查登录状态', 'error');
                 }
             });
         }
@@ -323,7 +372,7 @@ async function loadTags() {
     const res = await apiFetch('/api/tags');
     const data = await res.json();
     if (data.tags.length === 0) {
-        tagsList.innerHTML = '<span class="text-muted small">暂无标签</span>';
+        tagsList.innerHTML = '<div class="empty-state" style="padding:1.5rem 0;"><div class="empty-state-icon" style="font-size:1.5rem;">🏷️</div><div class="empty-state-desc">还没有标签</div></div>';
         return;
     }
     tagsList.innerHTML = data.tags.map(t => `
@@ -344,7 +393,7 @@ async function loadTags() {
 function renderDayMemos(dayData) {
     document.getElementById('dayMemosCard').classList.remove('d-none');
     if (!dayData || !dayData.memos || dayData.memos.length === 0) {
-        dayMemosList.innerHTML = '<li class="list-group-item text-muted small">当日无文档</li>';
+        dayMemosList.innerHTML = '<li class="list-group-item text-muted small text-center py-3">当日无文档</li>';
         dayMemosCount.textContent = '0';
         return;
     }

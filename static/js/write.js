@@ -26,7 +26,7 @@ updateCharCount();
 async function saveMemo(published) {
     const content = editor.value.trim();
     if (!content) {
-        alert('内容不能为空');
+        showToast('内容不能为空', 'error');
         return;
     }
     const method = memoId ? 'PUT' : 'POST';
@@ -40,7 +40,7 @@ async function saveMemo(published) {
         location.href = '/';
     } else {
         const err = await res.json();
-        alert('保存失败: ' + (err.error || '未知错误'));
+        showToast('保存失败: ' + (err.error || '未知错误'), 'error');
     }
 }
 
@@ -58,7 +58,7 @@ async function loadMemo(id) {
             document.title = '编辑草稿 - Vermillon';
         }
     } else {
-        alert('加载失败');
+        showToast('加载失败', 'error');
     }
 }
 

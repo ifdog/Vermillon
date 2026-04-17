@@ -136,7 +136,7 @@ async function loadAdminMemos(page = 1) {
 function renderTable(memos) {
     const tbody = document.getElementById('adminTableBody');
     if (memos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">暂无文章</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-title">还没有文章</div><div class="empty-state-desc">点击「新建文章」开始写作</div></div></td></tr>';
         return;
     }
     tbody.innerHTML = memos.map(m => `
@@ -163,7 +163,7 @@ function renderTable(memos) {
             if (res.ok) {
                 loadAdminMemos(adminState.page);
             } else {
-                alert('删除失败');
+                showToast('删除失败', 'error');
             }
         });
     });
