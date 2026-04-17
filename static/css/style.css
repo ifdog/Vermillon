@@ -629,7 +629,7 @@ body > .container-fluid {
 /* Back to top button */
 .back-to-top {
     position: fixed;
-    bottom: 1.5rem;
+    bottom: 3.5rem;
     right: 1.5rem;
     width: 40px;
     height: 40px;
