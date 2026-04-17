@@ -326,35 +326,19 @@ async function loadTags() {
         tagsList.innerHTML = '<span class="text-muted small">暂无标签</span>';
         return;
     }
-    const initialLimit = 15;
-    const allTags = data.tags;
-    const showTags = allTags.slice(0, initialLimit);
+    tagsList.innerHTML = data.tags.map(t => `
+        <span class="badge paper-tag tag-chip" data-tag="${t.name}" style="cursor:pointer">#${t.name} <span class="fw-normal">(${t.count})</span></span>
+    `).join('');
 
-    function renderTags(tags) {
-        tagsList.innerHTML = tags.map(t => `
-            <span class="badge paper-tag tag-chip" data-tag="${t.name}" style="cursor:pointer">#${t.name} <span class="fw-normal">(${t.count})</span></span>
-        `).join('');
-
-        if (allTags.length > initialLimit && tags.length <= initialLimit) {
-            const moreBtn = document.createElement('button');
-            moreBtn.className = 'btn btn-link btn-sm text-decoration-none p-0 tag-more-btn';
-            moreBtn.textContent = '展开全部';
-            moreBtn.addEventListener('click', () => renderTags(allTags));
-            tagsList.appendChild(moreBtn);
-        }
-
-        tagsList.querySelectorAll('.tag-chip').forEach(el => {
-            el.addEventListener('click', () => {
-                state.tag = el.dataset.tag;
-                state.date = null;
-                state.query = null;
-                state.page = 1;
-                loadMemos(true);
-            });
+    tagsList.querySelectorAll('.tag-chip').forEach(el => {
+        el.addEventListener('click', () => {
+            state.tag = el.dataset.tag;
+            state.date = null;
+            state.query = null;
+            state.page = 1;
+            loadMemos(true);
         });
-    }
-
-    renderTags(showTags);
+    });
 }
 
 function renderDayMemos(dayData) {
