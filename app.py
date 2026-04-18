@@ -2,7 +2,8 @@ import os
 from flask import Flask, send_from_directory, request, jsonify, render_template
 from db import init_db, close_db
 from config import UPLOAD_FOLDER, SECRET_KEY, ensure_upload_folder
-from api import memos, tags, search, calendar, upload, auth, settings, stats
+from api import memos, tags, search, calendar, upload, auth, settings, stats, rss
+from api.backup import bp as backup_bp
 
 def get_site_title():
     try:
@@ -29,6 +30,22 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(settings.bp)
     app.register_blueprint(stats.bp)
+    app.register_blueprint(rss.bp)
+    app.register_blueprint(backup_bp)
+    
+    @app.route('/robots.txt')
+    def robots():
+        return '''User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /write
+Disallow: /edit/
+Sitemap: ''' + request.url_root.rstrip('/') + '/sitemap.xml\n'
+    
+    @app.route('/memo/<slug>')
+    def memo_by_slug(slug):
+        return render_template('index.html', site_title=get_site_title())
     
     @app.route('/uploads/<path:filename>')
     def uploaded_file(filename):
@@ -58,7 +75,7 @@ def create_app():
     
     @app.route('/api/version')
     def version():
-        return jsonify({'version': '1.2'})
+        return jsonify({'version': '1.3'})
     
     return app
 

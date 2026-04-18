@@ -33,12 +33,13 @@ async function saveMemo(published) {
         showToast('内容不能为空', 'error');
         return;
     }
+    const pinned = document.getElementById('pinnedCheckbox')?.checked || false;
     const method = memoId ? 'PUT' : 'POST';
     const url = memoId ? `/api/memos/${memoId}` : '/api/memos';
     const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, published })
+        body: JSON.stringify({ content, published, pinned })
     });
     if (res.ok) {
         if (published) {
@@ -66,6 +67,10 @@ async function loadMemo(id) {
         editor.value = data.content;
         updatePreview();
         updateCharCount();
+        const pinnedCheckbox = document.getElementById('pinnedCheckbox');
+        if (pinnedCheckbox) {
+            pinnedCheckbox.checked = data.pinned ? true : false;
+        }
         if (!data.published) {
             document.title = '编辑草稿 - Vermillon';
         }

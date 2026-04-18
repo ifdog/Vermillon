@@ -4,6 +4,7 @@ let state = {
     tag: null,
     query: null,
     selectedMemoId: null,
+    selectedSlug: null,
     hasMore: false,
     calendarYear: new Date().getFullYear(),
     calendarMonth: new Date().getMonth() + 1,
@@ -147,8 +148,8 @@ async function loadMemos(reset) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    if (state.selectedMemoId) {
-        const res = await apiFetch(`/api/memos/${state.selectedMemoId}`);
+    if (state.selectedSlug) {
+        const res = await apiFetch(`/api/memos/by-slug/${state.selectedSlug}`);
         if (res.ok) {
             const memo = await res.json();
             renderMemos([memo]);
@@ -163,6 +164,21 @@ async function loadMemos(reset) {
     let url = `/api/memos?page=${state.page}&pageSize=5`;
     if (state.date) url += `&date=${state.date}`;
     if (state.tag) url += `&tag=${encodeURIComponent(state.tag)}`;
+    // Check URL for /memo/<slug> pattern
+    const slugMatch = location.pathname.match(/^\/memo\/(.+)$/);
+    if (slugMatch) {
+        state.selectedSlug = slugMatch[1];
+        const res = await apiFetch(`/api/memos/by-slug/${state.selectedSlug}`);
+        if (res.ok) {
+            const memo = await res.json();
+            renderMemos([memo]);
+        } else {
+            timelineEl.innerHTML = '<div class="text-center text-muted py-5">文章不存在</div>';
+        }
+        loadMoreBox.classList.add('d-none');
+        updateFilterBar();
+        return;
+    }
 
     if (state.query) {
         url = `/api/search?q=${encodeURIComponent(state.query)}&page=${state.page}&pageSize=5`;
@@ -241,17 +257,23 @@ function renderMemos(memos) {
                             <div class="memo-time text-muted" title="${formatDate(m.created_at)}">${timeAgo(m.created_at)}</div>
                         </div>
                     </div>
-                    ${currentUser ? `
-                    <div class="dropdown">
-                        <button class="btn btn-link btn-sm text-muted p-0 memo-menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/edit/${m.id}">编辑</a></li>
-                            <li><button class="dropdown-item text-danger delete-memo-btn" data-id="${m.id}">删除</button></li>
-                        </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        ${m.pinned ? '<span class="badge bg-warning text-dark" style="font-size:0.7rem">置顶</span>' : ''}
+                        <span class="memo-meta-badge" title="阅读量">阅读 ${m.read_count || 0}</span>
+                        <span class="memo-meta-badge" title="字数">字数 ${m.word_count || 0}</span>
+                        ${m.slug ? `<a href="/memo/${m.slug}" class="memo-meta-badge" title="文章链接">链接</a>` : ''}
+                        ${currentUser ? `
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-sm text-muted p-0 memo-menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/edit/${m.id}">编辑</a></li>
+                                <li><button class="dropdown-item text-danger delete-memo-btn" data-id="${m.id}">删除</button></li>
+                            </ul>
+                        </div>
+                        ` : ''}
                     </div>
-                    ` : ''}
                 </div>
                 <div class="markdown-body">${marked.parse(m.content || '')}</div>
                 ${tagsHtml ? `<div class="mt-2 memo-tags">${tagsHtml}</div>` : ''}

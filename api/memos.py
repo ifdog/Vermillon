@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, request, jsonify, g, session
 from db import get_db
-from utils import require_admin, extract_title, parse_tags
+from utils import require_admin, extract_title, parse_tags, generate_slug
 from config import PAGE_SIZE
 
 bp = Blueprint('memos', __name__, url_prefix='/api/memos')
@@ -25,8 +25,9 @@ def _memo_to_dict(row, db):
         'id': row['id'],
         'content': row['content'],
         'title': row['title'],
-        'mood': row['mood'],
         'word_count': row['word_count'] if 'word_count' in row.keys() else 0,
+        'pinned': row['pinned'] if 'pinned' in row.keys() else 0,
+        'slug': row['slug'] if 'slug' in row.keys() else None,
         'read_count': row['read_count'] if 'read_count' in row.keys() else 0,
         'updated_count': row['updated_count'] if 'updated_count' in row.keys() else 0,
         'published': row['published'] if 'published' in row.keys() else 1,
@@ -80,7 +81,7 @@ def list_memos():
         where_sql = 'WHERE ' + ' AND '.join(where_clauses)
     
     rows = db.execute(
-        f'SELECT * FROM memos {where_sql} ORDER BY created_at DESC LIMIT ? OFFSET ?',
+        f'SELECT * FROM memos {where_sql} ORDER BY pinned DESC, created_at DESC LIMIT ? OFFSET ?',
         params + [page_size, offset]
     ).fetchall()
     
@@ -105,10 +106,11 @@ def create_memo():
     
     db = get_db()
     title = extract_title(content)
-    mood = data.get('mood', '').strip()
     word_count = len(content)
     published = 1 if data.get('published', True) else 0
-    cursor = db.execute('INSERT INTO memos (content, title, mood, word_count, published) VALUES (?, ?, ?, ?, ?)', (content, title, mood or None, word_count, published))
+    pinned = 1 if data.get('pinned', False) else 0
+    slug = generate_slug(title, db)
+    cursor = db.execute('INSERT INTO memos (content, title, word_count, published, pinned, slug) VALUES (?, ?, ?, ?, ?, ?)', (content, title, word_count, published, pinned, slug))
     memo_id = cursor.lastrowid
     _update_tags(db, memo_id, content)
     db.commit()
@@ -141,15 +143,30 @@ def update_memo(id):
         return jsonify({'error': 'Not found'}), 404
     
     title = extract_title(content)
-    mood = data.get('mood', '').strip()
     word_count = len(content)
     published = 1 if data.get('published', True) else 0
-    db.execute('UPDATE memos SET content = ?, title = ?, mood = ?, word_count = ?, published = ?, updated_count = updated_count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?', (content, title, mood or None, word_count, published, id))
+    pinned = 1 if data.get('pinned', False) else 0
+    # Only regenerate slug if title changed and slug is not set
+    existing = db.execute('SELECT slug FROM memos WHERE id = ?', (id,)).fetchone()
+    slug = existing['slug'] if existing and existing['slug'] else generate_slug(title, db)
+    db.execute('UPDATE memos SET content = ?, title = ?, word_count = ?, published = ?, pinned = ?, slug = ?, updated_count = updated_count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?', (content, title, word_count, published, pinned, slug, id))
     _update_tags(db, id, content)
     db.commit()
     
     row = db.execute('SELECT * FROM memos WHERE id = ?', (id,)).fetchone()
     return jsonify(_memo_to_dict(row, db))
+
+@bp.route('/by-slug/<slug>', methods=['GET'])
+def get_memo_by_slug(slug):
+    db = get_db()
+    row = db.execute('SELECT * FROM memos WHERE slug = ?', (slug,)).fetchone()
+    if not row:
+        return jsonify({'error': 'Not found'}), 404
+    db.execute('UPDATE memos SET read_count = read_count + 1 WHERE id = ?', (row['id'],))
+    db.commit()
+    row = db.execute('SELECT * FROM memos WHERE slug = ?', (slug,)).fetchone()
+    return jsonify(_memo_to_dict(row, db))
+
 
 @bp.route('/<int:id>', methods=['DELETE'])
 @require_admin

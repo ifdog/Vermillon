@@ -398,12 +398,6 @@ body {
     object-fit: cover;
 }
 
-/* Mood */
-.memo-mood {
-    font-size: 1.1rem;
-    line-height: 1;
-}
-
 /* Copy button */
 .code-copy-btn {
     opacity: 0.7;
@@ -550,6 +544,29 @@ pre:hover .code-copy-btn {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
+}
+
+.memo-meta-badge {
+    background-color: rgba(216, 108, 90, 0.08);
+    color: var(--paper-primary);
+    border: 1px solid rgba(216, 108, 90, 0.25);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2em 0.55em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+a.memo-meta-badge {
+    text-decoration: none;
+    transition: background-color .15s, border-color .15s;
+}
+
+a.memo-meta-badge:hover {
+    background-color: rgba(216, 108, 90, 0.18);
+    border-color: rgba(216, 108, 90, 0.45);
+    color: var(--paper-primary);
 }
 
 body > .container-fluid {

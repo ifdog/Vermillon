@@ -23,8 +23,9 @@ def init_db(app):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content TEXT NOT NULL,
                 title TEXT,
-                mood TEXT,
                 word_count INTEGER DEFAULT 0,
+                pinned INTEGER DEFAULT 0,
+                slug TEXT,
                 read_count INTEGER DEFAULT 0,
                 updated_count INTEGER DEFAULT 0,
                 published INTEGER DEFAULT 1,
@@ -119,5 +120,20 @@ def init_db(app):
             cursor.execute('ALTER TABLE memos ADD COLUMN published INTEGER DEFAULT 1')
         except sqlite3.OperationalError:
             pass
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN pinned INTEGER DEFAULT 0')
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute('ALTER TABLE memos ADD COLUMN slug TEXT')
+        except sqlite3.OperationalError:
+            pass
+        
+        # Migrate: generate slugs for existing memos without one
+        from utils import generate_slug
+        rows = cursor.execute('SELECT id, title FROM memos WHERE slug IS NULL').fetchall()
+        for row in rows:
+            slug = generate_slug(row['title'] or 'memo', db)
+            cursor.execute('UPDATE memos SET slug = ? WHERE id = ?', (slug, row['id']))
         
         db.commit()
