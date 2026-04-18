@@ -51,12 +51,21 @@ def list_memos():
     db = get_db()
     date_filter = request.args.get('date')
     tag_filter = request.args.get('tag')
+    published_filter = request.args.get('published', type=int)
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('pageSize', PAGE_SIZE, type=int)
     offset = (page - 1) * page_size
     
+    is_admin = 'user_id' in session
     where_clauses = []
     params = []
+    
+    # Anonymous users only see published memos
+    if not is_admin:
+        where_clauses.append("published = 1")
+    elif published_filter is not None:
+        where_clauses.append("published = ?")
+        params.append(published_filter)
     
     if date_filter:
         where_clauses.append("DATE(created_at) = ?")

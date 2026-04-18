@@ -3,10 +3,13 @@ initPaperTrail();
 
 
 let adminState = {
-    page: 1,
+    articlesPage: 1,
+    draftsPage: 1,
     pageSize: 15,
-    total: 0,
-    memos: [],
+    articlesTotal: 0,
+    draftsTotal: 0,
+    articlesMemos: [],
+    draftsMemos: [],
     visitsPage: 1,
     visitsPageSize: 50,
     visitsTotal: 0
@@ -37,9 +40,10 @@ function showSection(section) {
     document.getElementById('section-' + section).classList.remove('d-none');
     const newArticleBtn = document.getElementById('newArticleBtn');
     if (newArticleBtn) {
-        newArticleBtn.classList.toggle('d-none', section !== 'articles');
+        newArticleBtn.classList.toggle('d-none', section !== 'articles' && section !== 'drafts');
     }
-    if (section === 'articles') loadAdminMemos(1);
+    if (section === 'articles') loadPublishedMemos(1);
+    if (section === 'drafts') loadDrafts(1);
     if (section === 'stats') loadStats();
     if (section === 'site') loadSiteSettings();
 }
@@ -122,25 +126,45 @@ document.getElementById('changePasswordBtn').addEventListener('click', async () 
 });
 
 // Articles Management
-async function loadAdminMemos(page = 1) {
-    const res = await apiFetch(`/api/memos?page=${page}&pageSize=${adminState.pageSize}`);
+async function loadPublishedMemos(page = 1) {
+    const res = await apiFetch(`/api/memos?published=1&page=${page}&pageSize=${adminState.pageSize}`);
     if (!res.ok) {
-        document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请重新登录</td></tr>';
+        document.getElementById('articlesTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请重新登录</td></tr>';
         return;
     }
     const data = await res.json();
-    adminState.memos = data.memos;
-    adminState.total = data.total;
-    adminState.page = page;
-    renderTable(data.memos);
-    renderPagination(data.total, page);
-    document.getElementById('totalCount').textContent = `${data.total} 篇`;
+    adminState.articlesMemos = data.memos;
+    adminState.articlesTotal = data.total;
+    adminState.articlesPage = page;
+    renderTable(data.memos, 'articles');
+    renderPagination(data.total, page, 'articles');
+    document.getElementById('articlesCount').textContent = `${data.total} 篇`;
 }
 
-function renderTable(memos) {
-    const tbody = document.getElementById('adminTableBody');
+// Drafts Management
+async function loadDrafts(page = 1) {
+    const res = await apiFetch(`/api/memos?published=0&page=${page}&pageSize=${adminState.pageSize}`);
+    if (!res.ok) {
+        document.getElementById('draftsTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">加载失败，请重新登录</td></tr>';
+        return;
+    }
+    const data = await res.json();
+    adminState.draftsMemos = data.memos;
+    adminState.draftsTotal = data.total;
+    adminState.draftsPage = page;
+    renderTable(data.memos, 'drafts');
+    renderPagination(data.total, page, 'drafts');
+    document.getElementById('draftsCount').textContent = `${data.total} 篇`;
+}
+
+function renderTable(memos, section) {
+    const tbodyId = section === 'articles' ? 'articlesTableBody' : 'draftsTableBody';
+    const tbody = document.getElementById(tbodyId);
+    const emptyMsg = section === 'articles'
+        ? '<div class="empty-state-icon">📭</div><div class="empty-state-title">还没有文章</div><div class="empty-state-desc">点击「新建文章」开始写作</div>'
+        : '<div class="empty-state-icon">📝</div><div class="empty-state-title">还没有草稿</div><div class="empty-state-desc">写作时点击「保存草稿」即可存入此处</div>';
     if (memos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-title">还没有文章</div><div class="empty-state-desc">点击「新建文章」开始写作</div></div></td></tr>';
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">${emptyMsg}</div></td></tr>`;
         return;
     }
     tbody.innerHTML = memos.map(m => `
@@ -150,11 +174,10 @@ function renderTable(memos) {
                 <div class="fw-medium">${escapeHtml(m.title || '(无标题)')}</div>
                 <div class="small text-muted text-truncate" style="max-width: 400px">${escapeHtml(m.content.substring(0, 60))}${m.content.length > 60 ? '...' : ''}</div>
             </td>
-            <td>${m.published ? '<span class="badge paper-badge">已发布</span>' : '<span class="badge bg-secondary">草稿</span>'}</td>
-            <td class="text-muted small">${formatDate(m.created_at)}</td>
+            <td class="text-muted small">${formatDate(section === 'articles' ? m.created_at : m.updated_at)}</td>
             <td>
                 <a href="/edit/${m.id}" class="btn btn-sm btn-paper-outline me-1">编辑</a>
-                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${m.id}">删除</button>
+                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${m.id}" data-section="${section}">删除</button>
             </td>
         </tr>
     `).join('');
@@ -163,9 +186,11 @@ function renderTable(memos) {
         btn.addEventListener('click', async () => {
             if (!confirm('确定删除这篇文章吗？')) return;
             const id = btn.dataset.id;
+            const sec = btn.dataset.section;
             const res = await apiFetch(`/api/memos/${id}`, { method: 'DELETE' });
             if (res.ok) {
-                loadAdminMemos(adminState.page);
+                if (sec === 'articles') loadPublishedMemos(adminState.articlesPage);
+                else loadDrafts(adminState.draftsPage);
             } else {
                 showToast('删除失败', 'error');
             }
@@ -173,9 +198,10 @@ function renderTable(memos) {
     });
 }
 
-function renderPagination(total, currentPage) {
+function renderPagination(total, currentPage, section) {
     const totalPages = Math.ceil(total / adminState.pageSize);
-    const el = document.getElementById('pagination');
+    const paginationId = section === 'articles' ? 'articlesPagination' : 'draftsPagination';
+    const el = document.getElementById(paginationId);
     if (totalPages <= 1) {
         el.innerHTML = '<ul class="pagination pagination-sm paper-pagination"></ul>';
         return;
@@ -188,11 +214,12 @@ function renderPagination(total, currentPage) {
     html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage + 1}">下一页</a></li>`;
     el.innerHTML = '<ul class="pagination pagination-sm paper-pagination">' + html + '</ul>';
 
+    const loadFn = section === 'articles' ? loadPublishedMemos : loadDrafts;
     el.querySelectorAll('.page-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const page = parseInt(link.dataset.page, 10);
-            if (page >= 1) loadAdminMemos(page);
+            if (page >= 1) loadFn(page);
         });
     });
 }

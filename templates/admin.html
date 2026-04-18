@@ -38,6 +38,9 @@
                         <button class="list-group-item list-group-item-action paper-list-item" data-section="articles">
                             📝 文章管理
                         </button>
+                        <button class="list-group-item list-group-item-action paper-list-item" data-section="drafts">
+                            🗒️ 草稿管理
+                        </button>
                         <button class="list-group-item list-group-item-action paper-list-item" data-section="stats">
                             📊 数值管理
                         </button>
@@ -100,8 +103,8 @@
                 <div id="section-articles" class="admin-section d-none">
                     <div class="card paper-card">
                         <div class="card-header paper-card-header d-flex justify-content-between align-items-center">
-                            <span>文章列表</span>
-                            <span class="badge paper-badge" id="totalCount">0 篇</span>
+                            <span>已发布文章</span>
+                            <span class="badge paper-badge" id="articlesCount">0 篇</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -110,19 +113,48 @@
                                         <tr>
                                             <th style="width:60px">ID</th>
                                             <th>标题</th>
-                                            <th style="width:100px">状态</th>
                                             <th style="width:160px">发布时间</th>
                                             <th style="width:140px">操作</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="adminTableBody">
-                                        <tr><td colspan="5" class="text-center text-muted py-4">加载中...</td></tr>
+                                    <tbody id="articlesTableBody">
+                                        <tr><td colspan="4" class="text-center text-muted py-4">加载中...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    <nav class="mt-3 d-flex justify-content-center" id="pagination">
+                    <nav class="mt-3 d-flex justify-content-center" id="articlesPagination">
+                        <ul class="pagination pagination-sm paper-pagination"></ul>
+                    </nav>
+                </div>
+
+                <!-- Drafts Management -->
+                <div id="section-drafts" class="admin-section d-none">
+                    <div class="card paper-card">
+                        <div class="card-header paper-card-header d-flex justify-content-between align-items-center">
+                            <span>草稿箱</span>
+                            <span class="badge paper-badge" id="draftsCount">0 篇</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 paper-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:60px">ID</th>
+                                            <th>标题</th>
+                                            <th style="width:160px">修改时间</th>
+                                            <th style="width:140px">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="draftsTableBody">
+                                        <tr><td colspan="4" class="text-center text-muted py-4">加载中...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="mt-3 d-flex justify-content-center" id="draftsPagination">
                         <ul class="pagination pagination-sm paper-pagination"></ul>
                     </nav>
                 </div>

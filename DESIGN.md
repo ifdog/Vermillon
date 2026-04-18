@@ -51,6 +51,9 @@ Vermillon/
 │   │   └── admin.js        # 管理后台逻辑
 │   ├── uploads/            # 附件存储（.gitkeep 保留目录）
 │   ├── saturn.png          # 品牌悬浮图标
+│   ├── favicon.ico         # 站点图标
+│   └── user.png            # 默认用户头像
+├── templates/              # Jinja2 模板
 │   ├── index.html          # 首页
 │   ├── write.html          # 编辑/新建页
 │   ├── admin.html          # 管理后台
@@ -62,7 +65,9 @@ Vermillon/
 ├── requirements.txt
 ├── PRD.md                  # 产品需求文档
 ├── DESIGN.md               # 本文件
-└── README.md               # 项目说明（含首页截图）
+├── README.md               # 项目说明（含首页截图）
+├── docker-compose.yml      # Docker Compose 配置
+└── Dockerfile              # Docker 镜像构建文件
 ```
 
 ---
@@ -193,6 +198,11 @@ CREATE TABLE memos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,      -- Markdown 原文
     title TEXT,                 -- 自动提取（# 标题 或 前20字）
+    mood TEXT,                  -- 心情/状态 emoji
+    word_count INTEGER DEFAULT 0,
+    read_count INTEGER DEFAULT 0,
+    updated_count INTEGER DEFAULT 0,
+    published INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -229,18 +239,18 @@ CREATE TABLE site_settings (
 
 -- 统计数据（如 total_visits, index_visits, today_visits）
 CREATE TABLE stats (
-    key TEXT PRIMARY KEY,
-    value INTEGER DEFAULT 0,
-    date TEXT
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    total_visits INTEGER DEFAULT 0,
+    index_visits INTEGER DEFAULT 0
 );
 
 -- 访问日志
 CREATE TABLE visits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    path TEXT,
+    path TEXT NOT NULL,
     ip TEXT,
     user_agent TEXT,
-    visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 单用户表（初始化时自动插入默认管理员 admin/admin）
@@ -356,5 +366,5 @@ docker-compose up -d
 
 ---
 
-**文档版本**：v1.1  
-**最后更新**：2026-04-14
+**文档版本**：v1.2  
+**最后更新**：2026-04-18

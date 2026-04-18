@@ -10,7 +10,13 @@ def get_db():
 def insert_memo(content, created_at, mood=''):
     db = get_db()
     cursor = db.cursor()
-    
+
+    # Check for duplicate by content + created_at to ensure idempotency
+    cursor.execute('SELECT id FROM memos WHERE content = ? AND created_at = ?', (content, created_at))
+    if cursor.fetchone():
+        db.close()
+        return None
+
     # title extraction
     lines = content.strip().splitlines()
     title = None
@@ -111,8 +117,15 @@ memos = [
     ("## 今天只是今天的今天\n\n> 昨天是历史，明天是谜团，\n> 今天是礼物——这就是为什么它叫 present。\n\n Master Oogway 的这句话，\n其实和禅宗的 \"当下即是\" 并无二致。\n\n我建立这个播客流，不是为了存档，\n而是为了练习「在场」。\n\n#zen #now #presence", "2026-04-14 20:00:00", "☕️"),
 ]
 
+inserted = 0
+skipped = 0
 for content, dt_str, mood in memos:
     mid = insert_memo(content, dt_str, mood)
-    print(f"Inserted memo {mid}: {dt_str} {mood}")
+    if mid:
+        print(f"Inserted memo {mid}: {dt_str} {mood}")
+        inserted += 1
+    else:
+        print(f"Skipped duplicate: {dt_str} {mood}")
+        skipped += 1
 
-print("Done!")
+print(f"Done! Inserted: {inserted}, Skipped: {skipped}")
