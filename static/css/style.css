@@ -872,7 +872,11 @@ body > .container-fluid {
     border: 3px solid rgba(216, 108, 90, 0.25);
     box-shadow: 0 0 0 4px var(--paper-bg);
     transition: transform 0.2s ease, border-color 0.2s ease;
-    z-index: 2;
+}
+
+.memo-card .card-body {
+    position: relative;
+    z-index: 1;
 }
 
 .memo-card:hover .timeline-node {
