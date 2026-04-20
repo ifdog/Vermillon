@@ -853,7 +853,7 @@ body > .container-fluid {
 
 .timeline-axis {
     position: absolute;
-    left: 22px;
+    left: 32px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -863,7 +863,7 @@ body > .container-fluid {
 
 .timeline-node {
     position: absolute;
-    left: -26px;
+    left: -16px;
     top: 46px;
     width: 10px;
     height: 10px;
@@ -900,7 +900,7 @@ body > .container-fluid {
     position: absolute;
     left: -48px;
     top: 14px;
-    width: 26px;
+    width: 24px;
     text-align: right;
     line-height: 1.15;
     pointer-events: none;
