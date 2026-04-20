@@ -845,9 +845,183 @@ body > .container-fluid {
     font-size: 0.875rem;
 }
 
+/* ========== Timeline Axis ========== */
+.timeline-wrap {
+    position: relative;
+    padding-left: 60px;
+}
+
+.timeline-axis {
+    position: absolute;
+    left: 21px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(216, 108, 90, 0.35), rgba(216, 108, 90, 0.15) 80%, transparent);
+    border-radius: 1px;
+}
+
+.timeline-node {
+    position: absolute;
+    left: -40px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--paper-primary);
+    border: 3px solid rgba(216, 108, 90, 0.25);
+    box-shadow: 0 0 0 4px var(--paper-bg);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    z-index: 2;
+}
+
+.memo-card:hover .timeline-node {
+    transform: scale(1.35);
+    border-color: rgba(216, 108, 90, 0.55);
+}
+
+.timeline-node.pinned {
+    border-radius: 2px;
+    transform: rotate(45deg);
+    width: 11px;
+    height: 11px;
+}
+
+.memo-card:hover .timeline-node.pinned {
+    transform: rotate(45deg) scale(1.35);
+}
+
+/* ========== Date Badge ========== */
+.date-badge {
+    position: absolute;
+    left: -54px;
+    top: 12px;
+    width: 44px;
+    text-align: right;
+    line-height: 1.15;
+    pointer-events: none;
+    user-select: none;
+}
+
+.date-badge-day {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--paper-primary);
+    display: block;
+}
+
+.date-badge-month {
+    font-size: 0.7rem;
+    color: var(--paper-muted);
+    display: block;
+    margin-top: 1px;
+}
+
+/* ========== Card Cover Image ========== */
+.memo-cover {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background: linear-gradient(135deg, rgba(240,235,215,0.8), rgba(255,251,240,0.6));
+    position: relative;
+}
+
+.memo-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    opacity: 0;
+}
+
+.memo-cover img.img-loaded {
+    opacity: 1;
+}
+
+.memo-card:hover .memo-cover img {
+    transform: scale(1.03);
+}
+
+.memo-cover-skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(240,235,215,0.6) 25%, rgba(255,251,240,0.8) 50%, rgba(240,235,215,0.6) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+}
+
+.memo-cover img.img-loaded + .memo-cover-skeleton {
+    display: none;
+}
+
+/* ========== Hero Banner ========== */
+.hero-banner {
+    background-color: rgba(255, 251, 240, 0.7);
+    border: 1px solid var(--paper-border);
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--paper-primary);
+    box-shadow: 0 2px 6px rgba(62, 56, 45, 0.06), 0 1px 3px rgba(62, 56, 45, 0.05);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+    opacity: 0;
+    transform: translateY(-8px);
+    animation: heroEnter 0.5s ease-out 0.2s forwards;
+}
+
+@keyframes heroEnter {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--paper-text);
+    margin-bottom: 0.25rem;
+}
+
+.hero-desc {
+    font-size: 0.875rem;
+    color: var(--paper-muted);
+    line-height: 1.5;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.hero-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--paper-primary);
+    line-height: 1.2;
+}
+
+.hero-stat-label {
+    font-size: 0.75rem;
+    color: var(--paper-muted);
+    margin-top: 0.15rem;
+}
+
+.hero-updated {
+    font-size: 0.8rem;
+    color: var(--paper-muted);
+    text-align: right;
+    white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 860px) {
     .write-layout { flex-direction: column; height: auto; }
     .editor-pane { border-right: none; border-bottom: 1px solid var(--paper-border); min-height: 400px; }
     .preview-pane { min-height: 400px; }
+    .timeline-wrap { padding-left: 56px; }
+    .timeline-axis { left: 26px; }
+    .timeline-node { left: 21px; }
+    .date-badge { left: -50px; width: 40px; }
+    .date-badge-day { font-size: 1.1rem; }
+    .hero-stat-value { font-size: 1.2rem; }
 }

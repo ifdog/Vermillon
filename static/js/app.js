@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initPaperTrail();
 
     await checkAuth();
+    loadHeroBanner();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
     loadTags();
@@ -81,6 +82,55 @@ async function checkAuth() {
         if (res.ok) {
             const data = await res.json();
             currentUser = data;
+        }
+    } catch (e) {}
+}
+
+function animateCountUp(el, target, duration = 1000) {
+    const start = performance.now();
+    const startVal = 0;
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(startVal + (target - startVal) * eased);
+        el.textContent = current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+async function loadHeroBanner() {
+    const heroEl = document.getElementById('heroBanner');
+    if (!heroEl) return;
+
+    // Hide hero when filtered
+    if (state.date || state.tag || state.query || state.selectedMemoId) {
+        heroEl.classList.add('d-none');
+        return;
+    }
+    heroEl.classList.remove('d-none');
+
+    try {
+        const res = await apiFetch('/api/stats/public');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('heroMemoCount').textContent = data.memo_count || 0;
+        document.getElementById('heroTagCount').textContent = data.tag_count || 0;
+        document.getElementById('heroWordCount').textContent = data.total_word_count || 0;
+        document.getElementById('heroReadCount').textContent = data.total_read_count || 0;
+
+        // Count-up animation
+        setTimeout(() => {
+            animateCountUp(document.getElementById('heroMemoCount'), data.memo_count || 0, 800);
+            animateCountUp(document.getElementById('heroTagCount'), data.tag_count || 0, 800);
+            animateCountUp(document.getElementById('heroWordCount'), data.total_word_count || 0, 1000);
+            animateCountUp(document.getElementById('heroReadCount'), data.total_read_count || 0, 1000);
+        }, 300);
+
+        if (data.last_updated_at) {
+            document.getElementById('heroUpdated').textContent = '最后更新于 ' + timeAgo(data.last_updated_at);
         }
     } catch (e) {}
 }
@@ -144,6 +194,7 @@ function showSkeleton(count = 3) {
 async function loadMemos(reset) {
     if (reset) {
         state.page = 1;
+        lastRenderedDate = null;
         showSkeleton(3);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -197,6 +248,7 @@ async function loadMemos(reset) {
     }
 
     updateFilterBar();
+    loadHeroBanner();
 }
 
 function updateFilterBar() {
@@ -213,6 +265,25 @@ function updateFilterBar() {
     filterText.textContent = text;
 }
 
+function extractFirstImage(content) {
+    if (!content) return null;
+    const mdMatch = content.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+    if (mdMatch) return mdMatch[2];
+    const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (htmlMatch) return htmlMatch[1];
+    return null;
+}
+
+function formatDateBadge(dateStr) {
+    const d = new Date(dateStr);
+    return {
+        day: d.getDate(),
+        month: (d.getMonth() + 1) + '月'
+    };
+}
+
+let lastRenderedDate = null;
+
 function renderMemos(memos) {
     if (memos.length === 0 && state.page === 1) {
         timelineEl.innerHTML = `
@@ -227,6 +298,18 @@ function renderMemos(memos) {
 
     if (state.page === 1) {
         timelineEl.innerHTML = '';
+        lastRenderedDate = null;
+    }
+
+    // Wrap timeline in axis container on first batch
+    if (state.page === 1 && !timelineEl.closest('.timeline-wrap')) {
+        const wrap = document.createElement('div');
+        wrap.className = 'timeline-wrap';
+        const axis = document.createElement('div');
+        axis.className = 'timeline-axis';
+        timelineEl.parentNode.insertBefore(wrap, timelineEl);
+        wrap.appendChild(axis);
+        wrap.appendChild(timelineEl);
     }
 
     let enterIndex = 0;
@@ -243,11 +326,41 @@ function renderMemos(memos) {
             }
         }).join('');
 
+        // Extract cover image from content
+        const coverUrl = extractFirstImage(m.content);
+        const coverHtml = coverUrl ? `
+            <div class="memo-cover">
+                <img src="${coverUrl}" alt="cover" loading="lazy">
+                <div class="memo-cover-skeleton"></div>
+            </div>
+        ` : '';
+
+        // Date badge: show only once per day
+        const memoDate = m.created_at ? m.created_at.split('T')[0] : '';
+        let dateBadgeHtml = '';
+        if (memoDate && memoDate !== lastRenderedDate) {
+            lastRenderedDate = memoDate;
+            const db = formatDateBadge(m.created_at);
+            dateBadgeHtml = `
+                <div class="date-badge">
+                    <span class="date-badge-day">${db.day}</span>
+                    <span class="date-badge-month">${db.month}</span>
+                </div>
+            `;
+        }
+
         const card = document.createElement('div');
         card.className = 'card paper-card memo-card card-enter';
         card.style.animationDelay = `${enterIndex * 0.06}s`;
+        card.style.position = 'relative';
         enterIndex++;
+
+        const nodeClass = m.pinned ? 'timeline-node pinned' : 'timeline-node';
+
         card.innerHTML = `
+            ${dateBadgeHtml}
+            <div class="${nodeClass}"></div>
+            ${coverHtml}
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2 memo-header">
                     <div class="d-flex align-items-center gap-2">
@@ -295,7 +408,7 @@ function renderMemos(memos) {
         }
         addCopyButtons(mdBody);
 
-        // Image lazy fade-in
+        // Image lazy fade-in (markdown body images)
         mdBody.querySelectorAll('img').forEach(img => {
             if (img.complete) {
                 img.classList.add('img-loaded');
@@ -303,6 +416,16 @@ function renderMemos(memos) {
                 img.addEventListener('load', () => img.classList.add('img-loaded'));
             }
         });
+
+        // Cover image lazy fade-in
+        const coverImg = card.querySelector('.memo-cover img');
+        if (coverImg) {
+            if (coverImg.complete) {
+                coverImg.classList.add('img-loaded');
+            } else {
+                coverImg.addEventListener('load', () => coverImg.classList.add('img-loaded'));
+            }
+        }
 
         card.querySelectorAll('.memo-tag').forEach(el => {
             el.addEventListener('click', () => {

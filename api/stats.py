@@ -12,6 +12,22 @@ def record_visit(path, ip=None, user_agent=None):
         db.execute('UPDATE stats SET index_visits = index_visits + 1 WHERE id = 1')
     db.commit()
 
+@bp.route('/public', methods=['GET'])
+def get_public_stats():
+    db = get_db()
+    memo_count = db.execute('SELECT COUNT(*) as c FROM memos WHERE published = 1').fetchone()['c']
+    tag_count = db.execute('SELECT COUNT(*) as c FROM tags').fetchone()['c']
+    total_word_count = db.execute('SELECT COALESCE(SUM(word_count), 0) as c FROM memos WHERE published = 1').fetchone()['c']
+    total_read_count = db.execute('SELECT COALESCE(SUM(read_count), 0) as c FROM memos WHERE published = 1').fetchone()['c']
+    last_memo = db.execute("SELECT updated_at FROM memos ORDER BY updated_at DESC LIMIT 1").fetchone()
+    return jsonify({
+        'memo_count': memo_count,
+        'tag_count': tag_count,
+        'total_word_count': total_word_count,
+        'total_read_count': total_read_count,
+        'last_updated_at': last_memo['updated_at'] if last_memo else None
+    })
+
 @bp.route('', methods=['GET'])
 @require_admin
 def get_stats():
