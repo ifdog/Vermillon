@@ -848,12 +848,12 @@ body > .container-fluid {
 /* ========== Timeline Axis ========== */
 .timeline-wrap {
     position: relative;
-    padding-left: 48px;
+    padding-left: 52px;
 }
 
 .timeline-axis {
     position: absolute;
-    left: 26px;
+    left: 32px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -863,14 +863,14 @@ body > .container-fluid {
 
 .timeline-node {
     position: absolute;
-    left: -16px;
+    left: -20px;
     top: 46px;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background-color: var(--paper-primary);
-    border: 3px solid rgba(216, 108, 90, 0.25);
-    box-shadow: 0 0 0 4px var(--paper-bg);
+    border: 2px solid rgba(216, 108, 90, 0.3);
+    box-shadow: 0 0 0 3px var(--paper-bg);
     transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
@@ -887,8 +887,8 @@ body > .container-fluid {
 .timeline-node.pinned {
     border-radius: 2px;
     transform: rotate(45deg);
-    width: 11px;
-    height: 11px;
+    width: 9px;
+    height: 9px;
 }
 
 .memo-card:hover .timeline-node.pinned {
@@ -898,9 +898,9 @@ body > .container-fluid {
 /* ========== Date Badge ========== */
 .date-badge {
     position: absolute;
-    left: -48px;
-    top: 12px;
-    width: 26px;
+    left: -52px;
+    top: 14px;
+    width: 28px;
     text-align: right;
     line-height: 1.15;
     pointer-events: none;
@@ -908,17 +908,17 @@ body > .container-fluid {
 }
 
 .date-badge-day {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--paper-primary);
     display: block;
 }
 
 .date-badge-month {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     color: var(--paper-muted);
     display: block;
-    margin-top: 1px;
+    margin-top: 2px;
 }
 
 /* ========== Card Cover Image ========== */
