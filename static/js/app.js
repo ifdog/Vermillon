@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     initPaperTrail();
 
     await checkAuth();
-    loadHeroBanner();
     loadMemos(true);
     loadCalendar(state.calendarYear, state.calendarMonth);
     loadTags();
@@ -248,7 +247,6 @@ async function loadMemos(reset) {
     }
 
     updateFilterBar();
-    loadHeroBanner();
 }
 
 function updateFilterBar() {
