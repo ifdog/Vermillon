@@ -848,12 +848,12 @@ body > .container-fluid {
 /* ========== Timeline Axis ========== */
 .timeline-wrap {
     position: relative;
-    padding-left: 68px;
+    padding-left: 54px;
 }
 
 .timeline-axis {
     position: absolute;
-    left: 26px;
+    left: 20px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -863,7 +863,7 @@ body > .container-fluid {
 
 .timeline-node {
     position: absolute;
-    left: -44px;
+    left: -38px;
     top: 46px;
     width: 12px;
     height: 12px;
@@ -894,9 +894,9 @@ body > .container-fluid {
 /* ========== Date Badge ========== */
 .date-badge {
     position: absolute;
-    left: -64px;
+    left: -50px;
     top: 12px;
-    width: 52px;
+    width: 44px;
     text-align: right;
     line-height: 1.15;
     pointer-events: none;
